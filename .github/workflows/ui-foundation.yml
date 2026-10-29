@@ -43,6 +43,12 @@ jobs:
         run: dotnet build src/host/EsCode.Host/EsCode.Host.csproj --configuration Release
       - name: Verify bounded named-pipe handshake
         run: dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj --configuration Release --no-build -- --ipc-spike
+      - name: Verify scoped tool grants
+        run: dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj --configuration Release --no-build -- --policy-spike
+      - name: Verify workspace revision guard
+        run: dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj --configuration Release --no-build -- --revision-spike
+      - name: Verify uncertain-outcome retry guard
+        run: dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj --configuration Release --no-build -- --recovery-spike
 
   visual-screenshots:
     runs-on: ubuntu-24.04
