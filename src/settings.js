@@ -1,5 +1,5 @@
 export const STORAGE_KEY="escode.ui.settings.v2";
-export const DEFAULT_SETTINGS=Object.freeze({version:2,theme:"dark",locale:"TR",density:"Comfortable",motion:false,agentMode:"docked",agentPinned:true,terminalOpen:true,agentWidth:320,agentX:80,agentY:96});
+export const DEFAULT_SETTINGS=Object.freeze({version:2,theme:"dark",locale:"TR",density:"Comfortable",motion:false,agentMode:"docked",agentPinned:true,terminalOpen:true,agentWidth:320,agentX:280,agentY:96});
 const between=(x,min,max)=>Number.isFinite(x)&&x>=min&&x<=max;
 export function validateSettings(value){
  if(!value||typeof value!=="object"||Array.isArray(value)||value.version!==2)return null;
@@ -12,7 +12,7 @@ export function validateSettings(value){
  if(typeof value.agentPinned==="boolean")r.agentPinned=value.agentPinned;
  if(typeof value.terminalOpen==="boolean")r.terminalOpen=value.terminalOpen;
  if(between(value.agentWidth,240,640))r.agentWidth=value.agentWidth;
- if(between(value.agentX,-2000,10000))r.agentX=value.agentX;
+ if(between(value.agentX,240,10000))r.agentX=value.agentX;
  if(between(value.agentY,-2000,10000))r.agentY=value.agentY;
  return r;
 }
