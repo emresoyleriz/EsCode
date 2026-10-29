@@ -1,0 +1,488 @@
+[
+  {
+    "id": "E01-S01",
+    "issue": 19,
+    "title": "Repo structure & pinned toolchain",
+    "parent": 1,
+    "link": "https://github.com/emresoyleriz/EsCode/issues/19",
+    "source": "GitHub Issue (V18 plan mirror)",
+    "status": "not_started"
+  },
+  {
+    "id": "E01-S02",
+    "issue": 20,
+    "title": "CI quality gates",
+    "parent": 1,
+    "link": "https://github.com/emresoyleriz/EsCode/issues/20",
+    "source": "GitHub Issue (V18 plan mirror)",
+    "status": "not_started"
+  },
+  {
+    "id": "E01-S03",
+    "issue": 21,
+    "title": "Architecture enforcement",
+    "parent": 1,
+    "link": "https://github.com/emresoyleriz/EsCode/issues/21",
+    "source": "GitHub Issue (V18 plan mirror)",
+    "status": "not_started"
+  },
+  {
+    "id": "E02-S01",
+    "issue": 22,
+    "title": "Authenticated Named Pipe transport",
+    "parent": 2,
+    "link": "https://github.com/emresoyleriz/EsCode/issues/22",
+    "source": "GitHub Issue (V18 plan mirror)",
+    "status": "not_started"
+  },
+  {
+    "id": "E02-S02",
+    "issue": 23,
+    "title": "Protocol and event stream",
+    "parent": 2,
+    "link": "https://github.com/emresoyleriz/EsCode/issues/23",
+    "source": "GitHub Issue (V18 plan mirror)",
+    "status": "not_started"
+  },
+  {
+    "id": "E02-S03",
+    "issue": 24,
+    "title": "Reconnect and failure handling",
+    "parent": 2,
+    "link": "https://github.com/emresoyleriz/EsCode/issues/24",
+    "source": "GitHub Issue (V18 plan mirror)",
+    "status": "not_started"
+  },
+  {
+    "id": "E03-S01",
+    "issue": 25,
+    "title": "Risk-tier isolation spike",
+    "parent": 3,
+    "link": "https://github.com/emresoyleriz/EsCode/issues/25",
+    "source": "GitHub Issue (V18 plan mirror)",
+    "status": "not_started"
+  },
+  {
+    "id": "E03-S02",
+    "issue": 26,
+    "title": "Tool broker authorization",
+    "parent": 3,
+    "link": "https://github.com/emresoyleriz/EsCode/issues/26",
+    "source": "GitHub Issue (V18 plan mirror)",
+    "status": "not_started"
+  },
+  {
+    "id": "E03-S03",
+    "issue": 27,
+    "title": "Worker lifecycle",
+    "parent": 3,
+    "link": "https://github.com/emresoyleriz/EsCode/issues/27",
+    "source": "GitHub Issue (V18 plan mirror)",
+    "status": "not_started"
+  },
+  {
+    "id": "E04-S01",
+    "issue": 28,
+    "title": "Global/workspace SQLite",
+    "parent": 4,
+    "link": "https://github.com/emresoyleriz/EsCode/issues/28",
+    "source": "GitHub Issue (V18 plan mirror)",
+    "status": "not_started"
+  },
+  {
+    "id": "E04-S02",
+    "issue": 29,
+    "title": "Operation journal and checkpoint",
+    "parent": 4,
+    "link": "https://github.com/emresoyleriz/EsCode/issues/29",
+    "source": "GitHub Issue (V18 plan mirror)",
+    "status": "not_started"
+  },
+  {
+    "id": "E04-S03",
+    "issue": 30,
+    "title": "Crash recovery & reconciliation",
+    "parent": 4,
+    "link": "https://github.com/emresoyleriz/EsCode/issues/30",
+    "source": "GitHub Issue (V18 plan mirror)",
+    "status": "not_started"
+  },
+  {
+    "id": "E05-S01",
+    "issue": 31,
+    "title": "Multi-root project manager",
+    "parent": 5,
+    "link": "https://github.com/emresoyleriz/EsCode/issues/31",
+    "source": "GitHub Issue (V18 plan mirror)",
+    "status": "not_started"
+  },
+  {
+    "id": "E05-S02",
+    "issue": 32,
+    "title": "Unsaved buffer snapshots",
+    "parent": 5,
+    "link": "https://github.com/emresoyleriz/EsCode/issues/32",
+    "source": "GitHub Issue (V18 plan mirror)",
+    "status": "not_started"
+  },
+  {
+    "id": "E05-S03",
+    "issue": 33,
+    "title": "Safe patch application",
+    "parent": 5,
+    "link": "https://github.com/emresoyleriz/EsCode/issues/33",
+    "source": "GitHub Issue (V18 plan mirror)",
+    "status": "not_started"
+  },
+  {
+    "id": "E06-S01",
+    "issue": 34,
+    "title": "Story branch workflow",
+    "parent": 6,
+    "link": "https://github.com/emresoyleriz/EsCode/issues/34",
+    "source": "GitHub Issue (V18 plan mirror)",
+    "status": "not_started"
+  },
+  {
+    "id": "E06-S02",
+    "issue": 35,
+    "title": "Git permission policy",
+    "parent": 6,
+    "link": "https://github.com/emresoyleriz/EsCode/issues/35",
+    "source": "GitHub Issue (V18 plan mirror)",
+    "status": "not_started"
+  },
+  {
+    "id": "E06-S03",
+    "issue": 36,
+    "title": "Diff and review",
+    "parent": 6,
+    "link": "https://github.com/emresoyleriz/EsCode/issues/36",
+    "source": "GitHub Issue (V18 plan mirror)",
+    "status": "not_started"
+  },
+  {
+    "id": "E07-S01",
+    "issue": 37,
+    "title": "Welcome and Project Hub",
+    "parent": 7,
+    "link": "https://github.com/emresoyleriz/EsCode/issues/37",
+    "source": "GitHub Issue (V18 plan mirror)",
+    "status": "not_started"
+  },
+  {
+    "id": "E07-S02",
+    "issue": 38,
+    "title": "Docking/floating layout",
+    "parent": 7,
+    "link": "https://github.com/emresoyleriz/EsCode/issues/38",
+    "source": "GitHub Issue (V18 plan mirror)",
+    "status": "not_started"
+  },
+  {
+    "id": "E07-S03",
+    "issue": 40,
+    "title": "Theme and design components",
+    "parent": 7,
+    "link": "https://github.com/emresoyleriz/EsCode/issues/40",
+    "source": "GitHub Issue (V18 plan mirror)",
+    "status": "not_started"
+  },
+  {
+    "id": "E08-S01",
+    "issue": 41,
+    "title": "Monaco integration",
+    "parent": 8,
+    "link": "https://github.com/emresoyleriz/EsCode/issues/41",
+    "source": "GitHub Issue (V18 plan mirror)",
+    "status": "not_started"
+  },
+  {
+    "id": "E08-S02",
+    "issue": 42,
+    "title": "Terminal and test runner",
+    "parent": 8,
+    "link": "https://github.com/emresoyleriz/EsCode/issues/42",
+    "source": "GitHub Issue (V18 plan mirror)",
+    "status": "not_started"
+  },
+  {
+    "id": "E08-S03",
+    "issue": 43,
+    "title": "Diff/review UI",
+    "parent": 8,
+    "link": "https://github.com/emresoyleriz/EsCode/issues/43",
+    "source": "GitHub Issue (V18 plan mirror)",
+    "status": "not_started"
+  },
+  {
+    "id": "E09-S01",
+    "issue": 44,
+    "title": "Provider adapters",
+    "parent": 9,
+    "link": "https://github.com/emresoyleriz/EsCode/issues/44",
+    "source": "GitHub Issue (V18 plan mirror)",
+    "status": "not_started"
+  },
+  {
+    "id": "E09-S02",
+    "issue": 45,
+    "title": "Capability probe and routing",
+    "parent": 9,
+    "link": "https://github.com/emresoyleriz/EsCode/issues/45",
+    "source": "GitHub Issue (V18 plan mirror)",
+    "status": "not_started"
+  },
+  {
+    "id": "E09-S03",
+    "issue": 46,
+    "title": "Model Studio UI",
+    "parent": 9,
+    "link": "https://github.com/emresoyleriz/EsCode/issues/46",
+    "source": "GitHub Issue (V18 plan mirror)",
+    "status": "not_started"
+  },
+  {
+    "id": "E10-S01",
+    "issue": 47,
+    "title": "Durable task DAG",
+    "parent": 10,
+    "link": "https://github.com/emresoyleriz/EsCode/issues/47",
+    "source": "GitHub Issue (V18 plan mirror)",
+    "status": "not_started"
+  },
+  {
+    "id": "E10-S02",
+    "issue": 48,
+    "title": "Plan and approval",
+    "parent": 10,
+    "link": "https://github.com/emresoyleriz/EsCode/issues/48",
+    "source": "GitHub Issue (V18 plan mirror)",
+    "status": "not_started"
+  },
+  {
+    "id": "E10-S03",
+    "issue": 49,
+    "title": "Agent execution and verification",
+    "parent": 10,
+    "link": "https://github.com/emresoyleriz/EsCode/issues/49",
+    "source": "GitHub Issue (V18 plan mirror)",
+    "status": "not_started"
+  },
+  {
+    "id": "E11-S01",
+    "issue": 50,
+    "title": "Story intake to plan",
+    "parent": 11,
+    "link": "https://github.com/emresoyleriz/EsCode/issues/50",
+    "source": "GitHub Issue (V18 plan mirror)",
+    "status": "not_started"
+  },
+  {
+    "id": "E11-S02",
+    "issue": 51,
+    "title": "Edit-test-review vertical slice",
+    "parent": 11,
+    "link": "https://github.com/emresoyleriz/EsCode/issues/51",
+    "source": "GitHub Issue (V18 plan mirror)",
+    "status": "not_started"
+  },
+  {
+    "id": "E11-S03",
+    "issue": 52,
+    "title": "Delivery and recovery E2E",
+    "parent": 11,
+    "link": "https://github.com/emresoyleriz/EsCode/issues/52",
+    "source": "GitHub Issue (V18 plan mirror)",
+    "status": "not_started"
+  },
+  {
+    "id": "E12-S01",
+    "issue": 53,
+    "title": "Incremental lexical index",
+    "parent": 12,
+    "link": "https://github.com/emresoyleriz/EsCode/issues/53",
+    "source": "GitHub Issue (V18 plan mirror)",
+    "status": "not_started"
+  },
+  {
+    "id": "E12-S02",
+    "issue": 54,
+    "title": "Language adapters",
+    "parent": 12,
+    "link": "https://github.com/emresoyleriz/EsCode/issues/54",
+    "source": "GitHub Issue (V18 plan mirror)",
+    "status": "not_started"
+  },
+  {
+    "id": "E12-S03",
+    "issue": 55,
+    "title": "Context retrieval and benchmarks",
+    "parent": 12,
+    "link": "https://github.com/emresoyleriz/EsCode/issues/55",
+    "source": "GitHub Issue (V18 plan mirror)",
+    "status": "not_started"
+  },
+  {
+    "id": "E13-S01",
+    "issue": 56,
+    "title": "Parallel isolated worktrees",
+    "parent": 13,
+    "link": "https://github.com/emresoyleriz/EsCode/issues/56",
+    "source": "GitHub Issue (V18 plan mirror)",
+    "status": "not_started"
+  },
+  {
+    "id": "E13-S02",
+    "issue": 57,
+    "title": "Merge coordinator",
+    "parent": 13,
+    "link": "https://github.com/emresoyleriz/EsCode/issues/57",
+    "source": "GitHub Issue (V18 plan mirror)",
+    "status": "not_started"
+  },
+  {
+    "id": "E13-S03",
+    "issue": 58,
+    "title": "Independent review and audit",
+    "parent": 13,
+    "link": "https://github.com/emresoyleriz/EsCode/issues/58",
+    "source": "GitHub Issue (V18 plan mirror)",
+    "status": "not_started"
+  },
+  {
+    "id": "E14-S01",
+    "issue": 59,
+    "title": "Trust manifest and certification",
+    "parent": 14,
+    "link": "https://github.com/emresoyleriz/EsCode/issues/59",
+    "source": "GitHub Issue (V18 plan mirror)",
+    "status": "not_started"
+  },
+  {
+    "id": "E14-S02",
+    "issue": 60,
+    "title": "MCP broker and prompt injection",
+    "parent": 14,
+    "link": "https://github.com/emresoyleriz/EsCode/issues/60",
+    "source": "GitHub Issue (V18 plan mirror)",
+    "status": "not_started"
+  },
+  {
+    "id": "E14-S03",
+    "issue": 61,
+    "title": "Browser automation",
+    "parent": 14,
+    "link": "https://github.com/emresoyleriz/EsCode/issues/61",
+    "source": "GitHub Issue (V18 plan mirror)",
+    "status": "not_started"
+  },
+  {
+    "id": "E15-S01",
+    "issue": 62,
+    "title": "Agent activity and timeline",
+    "parent": 15,
+    "link": "https://github.com/emresoyleriz/EsCode/issues/62",
+    "source": "GitHub Issue (V18 plan mirror)",
+    "status": "not_started"
+  },
+  {
+    "id": "E15-S02",
+    "issue": 63,
+    "title": "Resource budgets",
+    "parent": 15,
+    "link": "https://github.com/emresoyleriz/EsCode/issues/63",
+    "source": "GitHub Issue (V18 plan mirror)",
+    "status": "not_started"
+  },
+  {
+    "id": "E15-S03",
+    "issue": 64,
+    "title": "Local diagnostics",
+    "parent": 15,
+    "link": "https://github.com/emresoyleriz/EsCode/issues/64",
+    "source": "GitHub Issue (V18 plan mirror)",
+    "status": "not_started"
+  },
+  {
+    "id": "E16-S01",
+    "issue": 65,
+    "title": "Visual regression and component contracts",
+    "parent": 16,
+    "link": "https://github.com/emresoyleriz/EsCode/issues/65",
+    "source": "GitHub Issue (V18 plan mirror)",
+    "status": "not_started"
+  },
+  {
+    "id": "E16-S02",
+    "issue": 66,
+    "title": "Accessibility and i18n",
+    "parent": 16,
+    "link": "https://github.com/emresoyleriz/EsCode/issues/66",
+    "source": "GitHub Issue (V18 plan mirror)",
+    "status": "not_started"
+  },
+  {
+    "id": "E16-S03",
+    "issue": 67,
+    "title": "Performance and multi-monitor",
+    "parent": 16,
+    "link": "https://github.com/emresoyleriz/EsCode/issues/67",
+    "source": "GitHub Issue (V18 plan mirror)",
+    "status": "not_started"
+  },
+  {
+    "id": "E17-S01",
+    "issue": 68,
+    "title": "Installer and portable build",
+    "parent": 17,
+    "link": "https://github.com/emresoyleriz/EsCode/issues/68",
+    "source": "GitHub Issue (V18 plan mirror)",
+    "status": "not_started"
+  },
+  {
+    "id": "E17-S02",
+    "issue": 69,
+    "title": "Updates and rollback",
+    "parent": 17,
+    "link": "https://github.com/emresoyleriz/EsCode/issues/69",
+    "source": "GitHub Issue (V18 plan mirror)",
+    "status": "not_started"
+  },
+  {
+    "id": "E17-S03",
+    "issue": 70,
+    "title": "Backup and disaster recovery",
+    "parent": 17,
+    "link": "https://github.com/emresoyleriz/EsCode/issues/70",
+    "source": "GitHub Issue (V18 plan mirror)",
+    "status": "not_started"
+  },
+  {
+    "id": "E18-S01",
+    "issue": 71,
+    "title": "Security and chaos certification",
+    "parent": 18,
+    "link": "https://github.com/emresoyleriz/EsCode/issues/71",
+    "source": "GitHub Issue (V18 plan mirror)",
+    "status": "not_started"
+  },
+  {
+    "id": "E18-S02",
+    "issue": 72,
+    "title": "Agent quality evaluation",
+    "parent": 18,
+    "link": "https://github.com/emresoyleriz/EsCode/issues/72",
+    "source": "GitHub Issue (V18 plan mirror)",
+    "status": "not_started"
+  },
+  {
+    "id": "E18-S03",
+    "issue": 73,
+    "title": "Release go/no-go",
+    "parent": 18,
+    "link": "https://github.com/emresoyleriz/EsCode/issues/73",
+    "source": "GitHub Issue (V18 plan mirror)",
+    "status": "not_started"
+  }
+]
