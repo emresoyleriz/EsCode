@@ -72,7 +72,7 @@ function App(){
  const resize=e=>{if(!panelResize.current)return;const delta=panelResize.current.x-e.clientX;change("agentWidth",Math.max(240,Math.min(640,panelResize.current.width+delta)));};
  const endResize=()=>{panelResize.current=null};
  const startDrag=e=>{if(prefs.agentPinned||prefs.agentMode!=="floating"||e.button!==0)return;dragging.current={x:e.clientX,y:e.clientY,initialX:floatPosition?.x??prefs.agentX,initialY:floatPosition?.y??prefs.agentY};e.currentTarget.setPointerCapture(e.pointerId);};
- const moveDrag=e=>{if(!dragging.current)return;const {x,y,initialX,initialY}=dragging.current;setFloatPosition({x:Math.max(0,Math.min(window.innerWidth-240,initialX+e.clientX-x)),y:Math.max(60,Math.min(window.innerHeight-180,initialY+e.clientY-y))});};
+ const moveDrag=e=>{if(!dragging.current)return;const {x,y,initialX,initialY}=dragging.current;const navRight=document.querySelector(".sidebar")?.getBoundingClientRect().right??0;const minX=Math.min(window.innerWidth-240,navRight+8);setFloatPosition({x:Math.max(minX,Math.min(window.innerWidth-240,initialX+e.clientX-x)),y:Math.max(60,Math.min(window.innerHeight-180,initialY+e.clientY-y))});};
  const endDrag=()=>{if(dragging.current&&floatPosition){setPrefs(p=>({...p,agentX:floatPosition.x,agentY:floatPosition.y}));}dragging.current=null;};
  const dot=<span className="round-led" aria-label={dictionary("offline")}/>;
  const preview=()=>setNotice(dictionary("mock"));
