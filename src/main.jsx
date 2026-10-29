@@ -6,6 +6,7 @@ import {DEFAULT_SETTINGS,readSettings,saveSettings,resetSettings} from "./settin
 import "./styles.css";
 import "./monaco.js";
 import "./desktop.css";
+import "./generated-tokens.css";
 const Monaco=React.lazy(()=>import("@monaco-editor/react"));
 
 const seed={
