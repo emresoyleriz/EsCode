@@ -1,0 +1,8 @@
+import {test} from "node:test";import {strict as assert} from "node:assert";import {createState,reducer,NAV,validateLayout,layoutSnapshot} from "../src/state.js";
+test("thirteen screens remain navigable",()=>{assert.equal(NAV.length,13);for(const n of NAV)assert.equal(reducer(createState(),{type:"NAVIGATE",page:n.id}).page,n.id)});
+test("invalid navigation does not change state",()=>{const s=createState();assert.equal(reducer(s,{type:"NAVIGATE",page:"missing"}),s)});
+test("autonomous cannot be selected as MVP role",()=>{assert.equal(reducer(createState(),{type:"ROLE",value:"Autonomous"}).role,"Supervised")});
+test("layout restore rejects invalid and corrupt data",()=>{assert.equal(validateLayout({version:99,density:"Focus",agentPanel:true,terminalPanel:true}),null);assert.equal(validateLayout({version:1,density:"evil",agentPanel:true,terminalPanel:true}),null)});
+test("layout snapshot roundtrips",()=>{const x=layoutSnapshot(createState());assert.deepEqual(validateLayout(x),{density:"Comfortable",agentPanel:true,terminalPanel:true})});
+test("theme and density whitelists",()=>{assert.equal(reducer(createState(),{type:"THEME",value:"inject"}).theme,"dark");assert.equal(reducer(createState(),{type:"DENSITY",value:"broken"}).density,"Comfortable")});
+test("panel changes do not alter pinned preference",()=>{const s=createState();const n=reducer(s,{type:"PANEL",panel:"agent"});assert.equal(n.agentPanel,false);assert.equal(n.agentPinned,true)});

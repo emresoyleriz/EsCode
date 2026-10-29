@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://escode.dev/contracts/OperationJournal.schema.json",
+  "title": "OperationJournal",
+  "description": "EsCode V14 logical contract, proposed schema for implementation review; not yet security-certified.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "OperationId",
+    "InvocationId",
+    "Intent",
+    "Phase",
+    "ExpectedEffects",
+    "ObservedEffects",
+    "ReconciliationState",
+    "UpdatedAt",
+    "ContractVersion"
+  ],
+  "properties": {
+    "OperationId": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Stable identifier; format must be validated at service boundary"
+    },
+    "InvocationId": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Stable identifier; format must be validated at service boundary"
+    },
+    "Intent": {
+      "type": "object"
+    },
+    "Phase": {
+      "type": "string",
+      "minLength": 1,
+      "enum": [
+        "Prepared",
+        "Authorized",
+        "Executing",
+        "OutcomeUnknown",
+        "Verifying",
+        "Reconciled",
+        "Completed",
+        "Failed"
+      ]
+    },
+    "ExpectedEffects": {
+      "type": "array"
+    },
+    "ObservedEffects": {
+      "type": "array"
+    },
+    "ReconciliationState": {
+      "type": "string",
+      "minLength": 1
+    },
+    "UpdatedAt": {
+      "type": "string",
+      "minLength": 1,
+      "format": "date-time"
+    },
+    "ContractVersion": {
+      "type": "integer",
+      "const": 1
+    }
+  }
+}

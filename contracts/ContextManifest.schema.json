@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://escode.dev/contracts/ContextManifest.schema.json",
+  "title": "ContextManifest",
+  "description": "EsCode V14 logical contract, proposed schema for implementation review; not yet security-certified.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "ManifestId",
+    "WorkspaceSnapshotId",
+    "IndexVersion",
+    "Sources",
+    "ContextTokenBudget",
+    "CreatedAt",
+    "ContractVersion"
+  ],
+  "properties": {
+    "ManifestId": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Stable identifier; format must be validated at service boundary"
+    },
+    "WorkspaceSnapshotId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "IndexVersion": {
+      "type": "string",
+      "minLength": 1
+    },
+    "Sources": {
+      "type": "array"
+    },
+    "ContextTokenBudget": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "CreatedAt": {
+      "type": "string",
+      "minLength": 1,
+      "format": "date-time"
+    },
+    "ContractVersion": {
+      "type": "integer",
+      "const": 1
+    }
+  }
+}

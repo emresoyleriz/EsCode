@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://escode.dev/contracts/PluginManifest.schema.json",
+  "title": "PluginManifest",
+  "description": "EsCode V14 logical contract, proposed schema for implementation review; not yet security-certified.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "PluginId",
+    "Publisher",
+    "Version",
+    "Permissions",
+    "TrustLevel",
+    "Compatibility",
+    "ContractVersion"
+  ],
+  "properties": {
+    "PluginId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "Publisher": {
+      "type": "string",
+      "minLength": 1
+    },
+    "Version": {
+      "type": "string",
+      "minLength": 1,
+      "minimum": 0
+    },
+    "Permissions": {
+      "type": "array"
+    },
+    "TrustLevel": {
+      "type": "string",
+      "minLength": 1
+    },
+    "Compatibility": {
+      "type": "object"
+    },
+    "Signature": {
+      "type": "string",
+      "minLength": 1
+    },
+    "ContractVersion": {
+      "type": "integer",
+      "const": 1
+    }
+  }
+}

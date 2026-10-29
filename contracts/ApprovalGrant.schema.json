@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://escode.dev/contracts/ApprovalGrant.schema.json",
+  "title": "ApprovalGrant",
+  "description": "EsCode V14 logical contract, proposed schema for implementation review; not yet security-certified.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "GrantId",
+    "ActorId",
+    "ToolId",
+    "Resource",
+    "ArgsDigest",
+    "RiskClass",
+    "ExpiresAt",
+    "Decision",
+    "ContractVersion"
+  ],
+  "properties": {
+    "GrantId": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Stable identifier; format must be validated at service boundary"
+    },
+    "ActorId": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Stable identifier; format must be validated at service boundary"
+    },
+    "ToolId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "Resource": {
+      "type": "string",
+      "minLength": 1
+    },
+    "ArgsDigest": {
+      "type": "string",
+      "minLength": 1
+    },
+    "RiskClass": {
+      "type": "string",
+      "minLength": 1,
+      "enum": [
+        "Low",
+        "Medium",
+        "High",
+        "Critical"
+      ]
+    },
+    "ExpiresAt": {
+      "type": "string",
+      "minLength": 1,
+      "format": "date-time"
+    },
+    "Decision": {
+      "type": "string",
+      "minLength": 1,
+      "enum": [
+        "Approved",
+        "Denied",
+        "Expired",
+        "Revoked"
+      ]
+    },
+    "ContractVersion": {
+      "type": "integer",
+      "const": 1
+    }
+  }
+}

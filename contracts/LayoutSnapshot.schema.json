@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://escode.dev/contracts/LayoutSnapshot.schema.json",
+  "title": "LayoutSnapshot",
+  "description": "EsCode V14 logical contract, proposed schema for implementation review; not yet security-certified.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "LayoutId",
+    "Version",
+    "Density",
+    "Windows",
+    "Panels",
+    "CapturedAt",
+    "ContractVersion"
+  ],
+  "properties": {
+    "LayoutId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "Version": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "Density": {
+      "type": "string",
+      "minLength": 1,
+      "enum": [
+        "Comfortable",
+        "Compact",
+        "Focus"
+      ]
+    },
+    "Windows": {
+      "type": "array"
+    },
+    "Panels": {
+      "type": "array"
+    },
+    "MonitorFingerprint": {
+      "type": "string",
+      "minLength": 1
+    },
+    "CapturedAt": {
+      "type": "string",
+      "minLength": 1,
+      "format": "date-time"
+    },
+    "ContractVersion": {
+      "type": "integer",
+      "const": 1
+    }
+  }
+}

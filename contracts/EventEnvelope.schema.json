@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://escode.dev/contracts/EventEnvelope.schema.json",
+  "title": "EventEnvelope",
+  "description": "EsCode V14 logical contract, proposed schema for implementation review; not yet security-certified.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "StreamId",
+    "Sequence",
+    "SchemaVersion",
+    "OccurredAt",
+    "Payload",
+    "ContractVersion"
+  ],
+  "properties": {
+    "StreamId": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Stable identifier; format must be validated at service boundary"
+    },
+    "Sequence": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "SchemaVersion": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "OccurredAt": {
+      "type": "string",
+      "minLength": 1,
+      "format": "date-time"
+    },
+    "Payload": {
+      "type": "object"
+    },
+    "ContractVersion": {
+      "type": "integer",
+      "const": 1
+    }
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://escode.dev/contracts/CommandEnvelope.schema.json",
+  "title": "CommandEnvelope",
+  "description": "EsCode V14 logical contract, proposed schema for implementation review; not yet security-certified.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "CommandId",
+    "ActorId",
+    "ExpectedRevision",
+    "IdempotencyKey",
+    "Deadline",
+    "Payload",
+    "ContractVersion"
+  ],
+  "properties": {
+    "CommandId": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Stable identifier; format must be validated at service boundary"
+    },
+    "ActorId": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Stable identifier; format must be validated at service boundary"
+    },
+    "ExpectedRevision": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "IdempotencyKey": {
+      "type": "string",
+      "minLength": 1
+    },
+    "Deadline": {
+      "type": "string",
+      "minLength": 1,
+      "format": "date-time"
+    },
+    "Payload": {
+      "type": "object"
+    },
+    "ContractVersion": {
+      "type": "integer",
+      "const": 1
+    }
+  }
+}

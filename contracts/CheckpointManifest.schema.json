@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://escode.dev/contracts/CheckpointManifest.schema.json",
+  "title": "CheckpointManifest",
+  "description": "EsCode V14 logical contract, proposed schema for implementation review; not yet security-certified.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "CheckpointId",
+    "RunId",
+    "RunState",
+    "PendingOperations",
+    "Artifacts",
+    "SchemaVersion",
+    "ContractVersion"
+  ],
+  "properties": {
+    "CheckpointId": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Stable identifier; format must be validated at service boundary"
+    },
+    "RunId": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Stable identifier; format must be validated at service boundary"
+    },
+    "RunState": {
+      "type": "string",
+      "minLength": 1
+    },
+    "PendingOperations": {
+      "type": "array"
+    },
+    "Artifacts": {
+      "type": "array"
+    },
+    "SchemaVersion": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "ContractVersion": {
+      "type": "integer",
+      "const": 1
+    }
+  }
+}

@@ -1,0 +1,79 @@
+name: UI Foundation CI
+on:
+  pull_request:
+    paths:
+      - "src/**"
+      - "tests/**"
+      - "index.html"
+      - "package.json"
+      - ".github/workflows/ui-foundation.yml"
+  push:
+    branches: [main]
+    paths:
+      - "src/**"
+      - "tests/**"
+      - "index.html"
+      - "package.json"
+jobs:
+  ui-foundation:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: State contract tests
+        run: npm test
+      - name: Production bundle build
+        run: npm run build
+  windows-ipc-spike:
+    runs-on: windows-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - name: Build IPC spike
+        run: dotnet build src/host/EsCode.Host/EsCode.Host.csproj --configuration Release
+      - name: Verify bounded named-pipe handshake
+        run: dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj --configuration Release --no-build -- --ipc-spike
+      - name: Verify scoped tool grants
+        run: dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj --configuration Release --no-build -- --policy-spike
+      - name: Verify workspace revision guard
+        run: dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj --configuration Release --no-build -- --revision-spike
+      - name: Verify uncertain-outcome retry guard
+        run: dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj --configuration Release --no-build -- --recovery-spike
+
+  visual-screenshots:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Start local preview
+        run: |
+          npm run dev -- --host 127.0.0.1 > vite.log 2>&1 &
+          sleep 5
+      - name: Capture screenshots and verify navigation
+        run: npm run visual
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: escode-ui-visual-screenshots
+          path: |
+            artifacts/visual/
+            vite.log
+          retention-days: 7

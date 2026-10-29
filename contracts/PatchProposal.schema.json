@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://escode.dev/contracts/PatchProposal.schema.json",
+  "title": "PatchProposal",
+  "description": "EsCode V14 logical contract, proposed schema for implementation review; not yet security-certified.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "PatchId",
+    "BaseSnapshotId",
+    "ChangedFiles",
+    "Hunks",
+    "Evidence",
+    "RiskClass",
+    "CreatedAt",
+    "ContractVersion"
+  ],
+  "properties": {
+    "PatchId": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Stable identifier; format must be validated at service boundary"
+    },
+    "BaseSnapshotId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "ChangedFiles": {
+      "type": "array"
+    },
+    "Hunks": {
+      "type": "array"
+    },
+    "Evidence": {
+      "type": "array"
+    },
+    "RiskClass": {
+      "type": "string",
+      "minLength": 1,
+      "enum": [
+        "Low",
+        "Medium",
+        "High",
+        "Critical"
+      ]
+    },
+    "CreatedAt": {
+      "type": "string",
+      "minLength": 1,
+      "format": "date-time"
+    },
+    "ContractVersion": {
+      "type": "integer",
+      "const": 1
+    }
+  }
+}

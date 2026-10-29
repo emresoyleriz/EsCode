@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://escode.dev/contracts/IpcEnvelope.schema.json",
+  "title": "IpcEnvelope",
+  "description": "EsCode V14 logical contract, proposed schema for implementation review; not yet security-certified.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "ProtocolVersion",
+    "MessageId",
+    "CorrelationId",
+    "PayloadType",
+    "Payload",
+    "SentAt",
+    "ContractVersion"
+  ],
+  "properties": {
+    "ProtocolVersion": {
+      "type": "string",
+      "minLength": 1
+    },
+    "MessageId": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Stable identifier; format must be validated at service boundary"
+    },
+    "CorrelationId": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Stable identifier; format must be validated at service boundary"
+    },
+    "PayloadType": {
+      "type": "string",
+      "minLength": 1
+    },
+    "Payload": {
+      "type": "object"
+    },
+    "SentAt": {
+      "type": "string",
+      "minLength": 1,
+      "format": "date-time"
+    },
+    "ContractVersion": {
+      "type": "integer",
+      "const": 1
+    }
+  }
+}
