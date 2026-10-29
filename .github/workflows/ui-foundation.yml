@@ -6,6 +6,7 @@ on:
       - "tests/**"
       - "index.html"
       - "package.json"
+      - "package-lock.json"
       - ".github/workflows/ui-foundation.yml"
   push:
     branches: [main]
@@ -25,7 +26,7 @@ jobs:
         with:
           node-version: "22"
       - name: Install dependencies
-        run: npm install --no-audit --no-fund
+        run: npm ci --no-audit --no-fund
       - name: State contract tests
         run: npm test
       - name: Production bundle build
@@ -60,7 +61,7 @@ jobs:
         with:
           node-version: "22"
       - name: Install dependencies
-        run: npm install --no-audit --no-fund
+        run: npm ci --no-audit --no-fund
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
       - name: Start local preview
