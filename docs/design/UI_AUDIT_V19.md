@@ -34,5 +34,8 @@ Welcome Hub, Development Workspace, Agent Studio, Task Center, Code Intelligence
 ## Review protocol
 For every screen attach: screen reference dark/light, UX state matrix, keyboard map, semantic token mapping, accessibility assessment, performance trace, snapshot test result, owner and reviewer approval. Keep the visual design approval separate from functionality/test evidence.
 
+## Release-blocking acceptance gate
+The complete 13-screen UI acceptance matrix is tracked in [UI-GATE #81](https://github.com/emresoyleriz/EsCode/issues/81). No UI sign-off is possible until approved mockups, keyboard flows, visual regression and Windows multi-monitor performance evidence are attached. The seven UI-GAP Issues remain open.
+
 ## Current assessment
 The visual direction and component architecture are specified, but screen-by-screen high-fidelity artifacts and verified usability tests are still missing. **UI is NOT certified complete.** See UI-GAP Issues.
