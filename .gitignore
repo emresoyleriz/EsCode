@@ -1,0 +1,12 @@
+node_modules/
+dist/
+artifacts/
+coverage/
+*.log
+.env
+.env.*
+!.env.example
+.vscode/
+.DS_Store
+
+src/generated-tokens.css

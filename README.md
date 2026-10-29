@@ -1,46 +1,41 @@
 # EsCode — AI Development Studio
 
-**Prototype status:** premium UI foundation + typed contract schemas + Windows IPC technical spike. This repository is **NOT** yet a complete IDE or a secure autonomous agent product.
+**Engineering status:** In-development desktop UI foundation. The product is **not** a finished agent IDE and production security gates are **not** certified.
 
-## Interactive premium UI
+## Approved product
+- Premium original Apple-inspired (not copied) Windows 11 x64 development environment.
+- Electron + React + locally bundled Monaco editor; .NET 10 Host / secured IPC, risk-scoped Tool Broker, SQLite journal and multi-agent execution are target architecture.
+- 13-screen shell, dark/light semantic tokens, density profiles, TR/EN interface, dockable/floating agent preview.
+- MVP permissions: Read-only / Ask / Supervised. Autonomous disabled pending P0 security acceptance.
+- MVP vertical slice: Project → Story → Plan → Edit → Test → Review → human-controlled Git.
 
-The current implementation is a runnable browser-based visual prototype of the planned Electron+React desktop app: 13 screens, Midnight Glass / Pearl Light, density profiles, agent dock, code/terminal preview, model and recovery states, command palette (`Ctrl+K`). Actual Electron, React, Monaco and .NET integration remain future tasks.
+## What's actually in this branch
+- React 19 interface and Monaco ESM editor with local workers; editable in-memory buffers, *not* filesystem persistence.
+- Electron 45 sandboxed shell, minimal context-isolated preload API and custom escode://app/ protocol. No live .NET tool or agent bridge yet.
+- Versioned non-secret preferences and layout state; selected theme/density/locale/panel mode persisted safely.
+- Theme CSS custom properties generated from design/tokens.json.
+- 15 draft JSON Schema service contracts and separate Windows IPC/policy/revision/retry spikes.
+- 18 Epic + 54 Story + 270 checklist task mirror and .AI coding agent rules.
 
-```sh
-npm install
-npm test
-npm run dev
-```
+## Developer handoff
+[V20 Software Engineering Handoff](docs/DEVELOPER_HANDOFF_V20.md) · [Technical Acceptance Gates](docs/TECHNICAL_GATES_V20.md) · [Premium UI Audit](docs/design/UI_AUDIT_V19.md) · [UI-GATE #81](https://github.com/emresoyleriz/EsCode/issues/81) · [Issues](https://github.com/emresoyleriz/EsCode/issues).
 
-The development server prints a localhost URL. No model, file, Git or OS tools are invoked by the prototype.
+## Windows development
+Node 22 LTS (see .node-version), .NET 10 SDK, npm and Git are required.
 
-## Windows IPC proof
+    npm ci
+    npm test
+    npm run build
+    npm run dev
+    # In another terminal after build:
+    npm run desktop
+    dotnet build ./src/host/EsCode.Host/EsCode.Host.csproj -c Release
+    dotnet run --project ./src/host/EsCode.Host/EsCode.Host.csproj -c Release -- --ipc-spike
 
-Prerequisite: Windows 11 x64 and .NET 10 SDK.
+The built desktop shell opens the UI preview. The UI does not write actual project files, commit code or execute agents. Browser preview is localhost-only.
 
-```powershell
-dotnet build src/host/EsCode.Host/EsCode.Host.csproj -c Release
-dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj -c Release -- --ipc-spike
-```
+## CI evidence
+GitHub Actions tests Node state/contracts, UI build and Playwright screenshots as well as Windows .NET IPC/policy/revision/recovery spikes. The smoke tests are **not** equivalent to secure production approval, human UX signoff, crash-safe journal or Windows installer acceptance.
 
-This tests bounded same-user Named Pipe + token handshake only; it does **not** complete the P0 security gate.
-
-## Planning and architecture
-
-- [Issue planning mirror](planning/EPICS_AND_STORIES.md): 18 Epic, 54 Story, 270 tasks.
-- [Architecture](docs/architecture/BASELINE.md) and [15 service schemas](contracts/README.md).
-- [Premium UI audit](docs/design/UI_AUDIT_V19.md) and [13-screen acceptance gate](https://github.com/emresoyleriz/EsCode/issues/81).
-- [.AI rules](.AI/START.md) and [workflow](.AI/WORKFLOW.md).
-- [Draft UI foundation PR](https://github.com/emresoyleriz/EsCode/pull/82).
-
-The full historic V18/V19 ZIP artifacts are separate ChatGPT deliverables and have **not** been completely synchronized to GitHub. In-repository planning data is a GitHub Issue mirror, not a byte-for-byte copy of the original archive.
-
-## Git process and safety
-
-Default branch: `main`; feature branches and PRs for delivery. Human retains commit, push and merge control in the product. P0 IPC, sandbox, recovery and buffer/worktree consistency must be verified before allowing autonomous tooling.
-
-## Verification
-
-GitHub Actions checks `npm test`, `npm run build` and a Windows .NET IPC spike. Consult the [Actions page](https://github.com/emresoyleriz/EsCode/actions) for actual runs. Do not equate a passing UI build with a complete security, UX or production release gate.
-
-**Project delivery state:** In progress — no Epic has met its full Definition of Done yet.
+## Release discipline
+Every Story needs verified positive and negative tests, relevant UX design approval and reviewer evidence. Commit/push/merge controls remain with the user. Main-branch protection requires repository owner confirmation in GitHub Settings. The original V18/V19 archive documentation is distributed separately and remains pending full GitHub import.

@@ -1,0 +1,10 @@
+import {test} from "node:test";
+import {strict as assert} from "node:assert";
+import {t,coverage} from "../src/i18n.js";
+import {DEFAULT_SETTINGS,validateSettings,readSettings,saveSettings,resetSettings,STORAGE_KEY} from "../src/settings.js";
+test("TR and EN dictionaries cover the same UI surface",()=>{const c=coverage();assert.equal(c.missing.length,0);assert.equal(c.extra.length,0);assert.ok(c.keys>50);});
+test("locale switching changes real screen titles",()=>{assert.equal(t("TR","welcome"),"Hoş Geldiniz");assert.equal(t("EN","welcome"),"Welcome Hub");assert.notEqual(t("TR","agentOffline"),t("EN","agentOffline"));});
+test("settings reject malformed/untrusted versions",()=>{assert.equal(validateSettings({version:3}),null);assert.equal(validateSettings([]),null);});
+test("settings validate panel mode, width, locale, motion",()=>{const v=validateSettings({version:2,locale:"INJECT",agentMode:"free",agentWidth:9999,motion:true});assert.equal(v.locale,"TR");assert.equal(v.agentMode,"docked");assert.equal(v.agentWidth,320);assert.equal(v.motion,true);});
+test("settings roundtrip and reset without persisting secrets",()=>{const m=new Map();const store={getItem:k=>m.get(k)||null,setItem:(k,v)=>m.set(k,v),removeItem:k=>m.delete(k)};assert.equal(saveSettings({...DEFAULT_SETTINGS,locale:"EN",theme:"light"},store),true);assert.equal(readSettings(store).locale,"EN");assert.equal(readSettings(store).theme,"light");assert.equal(resetSettings(store).theme,"dark");assert.equal(m.has(STORAGE_KEY),false);});
+test("malformed storage cannot crash settings read",()=>{const st={getItem:()=>"{broken"};assert.equal(readSettings(st).locale,"TR");});
