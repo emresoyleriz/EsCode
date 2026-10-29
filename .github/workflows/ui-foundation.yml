@@ -43,3 +43,31 @@ jobs:
         run: dotnet build src/host/EsCode.Host/EsCode.Host.csproj --configuration Release
       - name: Verify bounded named-pipe handshake
         run: dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj --configuration Release --no-build -- --ipc-spike
+
+  visual-screenshots:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Start local preview
+        run: |
+          npm run dev -- --host 127.0.0.1 > vite.log 2>&1 &
+          sleep 5
+      - name: Capture screenshots and verify navigation
+        run: npm run visual
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: escode-ui-visual-screenshots
+          path: |
+            artifacts/visual/
+            vite.log
+          retention-days: 7
