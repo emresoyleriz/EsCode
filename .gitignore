@@ -8,3 +8,5 @@ coverage/
 !.env.example
 .vscode/
 .DS_Store
+
+src/generated-tokens.css
