@@ -1,21 +1,34 @@
-# EsCode UI Foundation — Honest Scope
+# EsCode — UI Foundation Scope (Post-Merge)
 
-This folder implements an **interactive, browser-based high-fidelity UI prototype**, not the completed AI Development Studio application.
+**Implementation stage:** browser-based interactive UI prototype, not the production Electron+React+Monaco desktop application.
 
-## Working
-- Thirteen primary screens, navigable sidebar, command palette (Ctrl+K), theme/density switching.
-- Interactive IDE preview (file selection and terminal visibility), agent dock pin/close, saved layout JSON export as client-side copy, version validation.
-- Model and risk states represented accurately as **not connected** or **unverified**; no false success messages.
-- Automated Node state/reducer tests via `npm test`.
+## Demonstrated in main
+- 13 navigable screen surfaces, dark/light themes, density profiles and command palette.
+- Basic client-side panel toggles, settings UI and visual code preview.
+- 15 draft JSON schemas and structural tests.
+- GitHub Actions visual smoke run captures 26 light/dark screenshots and verifies navigation.
+- Limited Windows .NET named pipe, approval scope, revision and retry guard smoke checks.
+- Main CI: https://github.com/emresoyleriz/EsCode/actions/runs/40899370170 — all three jobs successful.
 
-## Not implemented
-- Electron Main, .NET host, authenticated IPC, operating-system sandbox, file writes, live Monaco, LLM integration, MCP, Git, debugger and agent execution.
-- Real docking drag-and-drop, crash recovery, screen-reader/keyboard full E2E, visual snapshots, performance certification.
-- Production brand asset approval or cross-platform packaging.
+## Missing production behavior
+- Real Electron, React, Monaco, LSP, debugging, OS commands and agent execution.
+- Persisted layout and preferences; full translations (locale dropdown is not i18n).
+- Actual docking/drag/floating, snapshot restoration and authentic file selection behavior (displayed code is static).
+- Full keyboard/focus/assistive-tech usability, responsive/high-DPI Windows multi-monitor acceptance, human-approved visual references and measured p95 performance.
+- Robust client and backend authentication, sandbox adversarial tests, durable storage recovery, Git and model integrations.
+- Reproducible package-lock / npm ci and complete V18 documentation import.
 
-## Run
-1. Install Node and npm; run `npm install`.
-2. Run `npm test` for state tests.
-3. Run `npm run dev` and open the printed localhost URL.
+## Run the existing preview
 
-Do not close P0/security gates, or the UI-GAP and UI-GATE issues, until evidence is attached and reviewed. This branch is intended for a review PR, not an automatic merge.
+```sh
+npm install
+npm test
+npm run dev
+```
+
+Use GitHub Actions for CI evidence. Tests that pass prove the explicitly tested subset; they do not certify production architecture or release quality.
+
+## Tracking
+- [Merged PR #82](https://github.com/emresoyleriz/EsCode/pull/82)
+- [UI-GATE #81](https://github.com/emresoyleriz/EsCode/issues/81)
+- [Post-merge audit issues #83–#87](https://github.com/emresoyleriz/EsCode/issues?q=is%3Aissue+is%3Aopen+AUDIT)
