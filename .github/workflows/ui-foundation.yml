@@ -1,0 +1,32 @@
+name: UI Foundation CI
+on:
+  pull_request:
+    paths:
+      - "src/**"
+      - "tests/**"
+      - "index.html"
+      - "package.json"
+      - ".github/workflows/ui-foundation.yml"
+  push:
+    branches: [main]
+    paths:
+      - "src/**"
+      - "tests/**"
+      - "index.html"
+      - "package.json"
+jobs:
+  ui-foundation:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: State contract tests
+        run: npm test
+      - name: Production bundle build
+        run: npm run build
