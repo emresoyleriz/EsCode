@@ -12,7 +12,9 @@
     "build": "vite build",
     "test": "node --test tests/*.test.js",
     "visual": "node scripts/visual-snapshots.mjs",
-    "desktop": "electron ."
+    "desktop": "electron .",
+    "predev": "node scripts/generate-theme.mjs",
+    "prebuild": "node scripts/generate-theme.mjs"
   },
   "dependencies": {
     "react": "19.3.1",
