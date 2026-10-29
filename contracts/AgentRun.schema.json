@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://escode.dev/contracts/AgentRun.schema.json",
+  "title": "AgentRun",
+  "description": "EsCode V14 logical contract, proposed schema for implementation review; not yet security-certified.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "RunId",
+    "TaskId",
+    "State",
+    "PolicyProfile",
+    "ModelProfile",
+    "Budget",
+    "ContractVersion"
+  ],
+  "properties": {
+    "RunId": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Stable identifier; format must be validated at service boundary"
+    },
+    "TaskId": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Stable identifier; format must be validated at service boundary"
+    },
+    "State": {
+      "type": "string",
+      "minLength": 1,
+      "enum": [
+        "Created",
+        "Planning",
+        "AwaitingApproval",
+        "Ready",
+        "Running",
+        "Paused",
+        "OutcomeUnknown",
+        "Verifying",
+        "Completed",
+        "Failed",
+        "Cancelled"
+      ]
+    },
+    "PolicyProfile": {
+      "type": "string",
+      "minLength": 1
+    },
+    "ModelProfile": {
+      "type": "string",
+      "minLength": 1
+    },
+    "Budget": {
+      "type": "object"
+    },
+    "CurrentCheckpointId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "ContractVersion": {
+      "type": "integer",
+      "const": 1
+    }
+  }
+}

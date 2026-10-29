@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://escode.dev/contracts/ProviderCapability.schema.json",
+  "title": "ProviderCapability",
+  "description": "EsCode V14 logical contract, proposed schema for implementation review; not yet security-certified.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "ProviderId",
+    "ModelId",
+    "ProbeVersion",
+    "TestedAt",
+    "ToolCalling",
+    "StructuredOutput",
+    "Streaming",
+    "ContractVersion"
+  ],
+  "properties": {
+    "ProviderId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "ModelId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "ProbeVersion": {
+      "type": "string",
+      "minLength": 1
+    },
+    "TestedAt": {
+      "type": "string",
+      "minLength": 1,
+      "format": "date-time"
+    },
+    "ToolCalling": {
+      "type": "boolean"
+    },
+    "StructuredOutput": {
+      "type": "boolean"
+    },
+    "Streaming": {
+      "type": "boolean"
+    },
+    "Override": {
+      "type": "object"
+    },
+    "ContractVersion": {
+      "type": "integer",
+      "const": 1
+    }
+  }
+}

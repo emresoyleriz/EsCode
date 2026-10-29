@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://escode.dev/contracts/MigrationManifest.schema.json",
+  "title": "MigrationManifest",
+  "description": "EsCode V14 logical contract, proposed schema for implementation review; not yet security-certified.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "MigrationId",
+    "FromVersion",
+    "ToVersion",
+    "Checksum",
+    "Reversible",
+    "BackupRequired",
+    "ContractVersion"
+  ],
+  "properties": {
+    "MigrationId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "FromVersion": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "ToVersion": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "Checksum": {
+      "type": "string",
+      "minLength": 1
+    },
+    "Reversible": {
+      "type": "boolean"
+    },
+    "BackupRequired": {
+      "type": "boolean"
+    },
+    "ContractVersion": {
+      "type": "integer",
+      "const": 1
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "BackupRequired": {
+            "const": true
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "Checksum"
+        ]
+      }
+    }
+  ]
+}
