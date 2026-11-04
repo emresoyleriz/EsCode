@@ -16,7 +16,8 @@
     "predev": "node scripts/generate-theme.mjs",
     "prebuild": "node scripts/generate-theme.mjs",
     "check:syntax": "node scripts/check-syntax.mjs",
-    "check:foundation": "node --test tests/foundation.test.js"
+    "check:foundation": "node --test tests/foundation.test.js",
+    "postinstall": "node scripts/patch-monaco-dompurify.mjs"
   },
   "dependencies": {
     "react": "19.3.1",
@@ -28,5 +29,8 @@
     "vite": "8.3.5",
     "@playwright/test": "1.56.0",
     "electron": "45.1.0"
+  },
+  "overrides": {
+    "dompurify": "3.4.17"
   }
 }
