@@ -63,6 +63,8 @@ jobs:
         run: dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj --configuration Release --no-build -- --recovery-spike
       - name: Verify fail-closed Tool Broker authorization
         run: dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj --configuration Release --no-build -- --broker-policy-spike
+      - name: Verify durable SQLite operation journal and restart recovery
+        run: dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj --configuration Release --no-build -- --journal-spike
       - name: Verify Windows Job Object containment
         run: dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj --configuration Release --no-build -- --worker-containment-spike
       - name: Verify real Node to .NET Host IPC with negative scenarios

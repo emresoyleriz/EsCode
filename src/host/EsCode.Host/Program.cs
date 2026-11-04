@@ -16,6 +16,12 @@ if (args.Contains("--worker-containment-spike", StringComparer.Ordinal))
     Console.WriteLine(passed ? "WORKER_CONTAINMENT_SPIKE_PASS" : "WORKER_CONTAINMENT_SPIKE_FAIL");
     return passed ? 0 : 1;
 }
+if (args.Contains("--journal-spike", StringComparer.Ordinal))
+{
+    var passed = JournalSpike.Run();
+    Console.WriteLine(passed ? "SQLITE_JOURNAL_SPIKE_PASS" : "SQLITE_JOURNAL_SPIKE_FAIL");
+    return passed ? 0 : 1;
+}
 if (args.Contains("--broker-policy-spike", StringComparer.Ordinal))
 {
     var passed = ToolPolicyBrokerSpike.Run();
