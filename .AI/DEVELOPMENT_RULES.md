@@ -10,3 +10,4 @@
 - No secret values in logs, prompts, exports, Issue bodies or PRs.
 - Service boundaries and contract schemas require review before incompatible changes.
 - Do not modify main directly unless explicitly authorized; prefer review PRs.
+- When authorized to publish a development batch, stage and test work locally first; use one consolidated commit and one push for the completed batch, not per-file commits. Keep merge human-controlled.

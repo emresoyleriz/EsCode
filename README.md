@@ -15,10 +15,12 @@
 - Versioned non-secret preferences and layout state; selected theme/density/locale/panel mode persisted safely.
 - Theme CSS custom properties generated from design/tokens.json.
 - 15 draft JSON Schema service contracts and separate Windows IPC/policy/revision/retry spikes.
-- 18 Epic + 54 Story + 270 checklist task mirror and .AI coding agent rules.
+- 18 Epic + 54 unique Story IDs (55 issue records; E07-S02 is duplicated in #38/#39) + 270 checklist tasks and .AI coding agent rules.
 
 ## Developer handoff
 [V20 Software Engineering Handoff](docs/DEVELOPER_HANDOFF_V20.md) · [Technical Acceptance Gates](docs/TECHNICAL_GATES_V20.md) · [Premium UI Audit](docs/design/UI_AUDIT_V19.md) · [UI-GATE #81](https://github.com/emresoyleriz/EsCode/issues/81) · [Issues](https://github.com/emresoyleriz/EsCode/issues).
+
+[G0 verification runbook](docs/G0_FOUNDATION_RUNBOOK.md) describes reproducibility and the still-open security/release gates.
 
 ## Windows development
 Node 22 LTS (see .node-version), .NET 10 SDK, npm and Git are required.

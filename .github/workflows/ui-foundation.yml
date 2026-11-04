@@ -1,46 +1,54 @@
-name: UI Foundation CI
+name: EsCode Foundation CI
 on:
   pull_request:
-    paths:
-      - "src/**"
-      - "tests/**"
-      - "index.html"
-      - "package.json"
-      - "package-lock.json"
-      - ".github/workflows/ui-foundation.yml"
   push:
     branches: [main]
-    paths:
-      - "src/**"
-      - "tests/**"
-      - "index.html"
-      - "package.json"
+  workflow_dispatch:
+permissions:
+  contents: read
 jobs:
   ui-foundation:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: "22"
-      - name: Install dependencies
+          node-version-file: .node-version
+          cache: npm
+      - name: Reproducible install
         run: npm ci --no-audit --no-fund
-      - name: State contract tests
+      - name: JavaScript syntax checks
+        run: npm run check:syntax
+      - name: State, contract and foundation tests
+        run: npm test
+      - name: Production bundle build
+        run: npm run build
+  windows-ui-build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: npm
+      - name: Reproducible install
+        run: npm ci --no-audit --no-fund
+      - name: JavaScript syntax checks
+        run: npm run check:syntax
+      - name: State, contract and foundation tests
         run: npm test
       - name: Production bundle build
         run: npm run build
   windows-ipc-spike:
     runs-on: windows-latest
-    permissions:
-      contents: read
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
-      - name: Build IPC spike
+      - name: Record SDK
+        run: dotnet --info
+      - name: Build .NET Host spike
         run: dotnet build src/host/EsCode.Host/EsCode.Host.csproj --configuration Release
       - name: Verify bounded named-pipe handshake
         run: dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj --configuration Release --no-build -- --ipc-spike
@@ -50,17 +58,25 @@ jobs:
         run: dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj --configuration Release --no-build -- --revision-spike
       - name: Verify uncertain-outcome retry guard
         run: dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj --configuration Release --no-build -- --recovery-spike
-
-  visual-screenshots:
-    runs-on: ubuntu-24.04
-    permissions:
-      contents: read
+  dependency-audit:
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: "22"
-      - name: Install dependencies
+          node-version-file: .node-version
+          cache: npm
+      - name: Fail on high or critical production dependency advisories
+        run: npm audit --omit=dev --audit-level=high
+  visual-screenshots:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: npm
+      - name: Reproducible install
         run: npm ci --no-audit --no-fund
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
