@@ -11,7 +11,7 @@
 
 ## What's actually in this branch
 - React 19 interface and Monaco ESM editor with local workers; editable in-memory buffers, *not* filesystem persistence.
-- Electron 45 sandboxed shell, minimal context-isolated preload API and custom escode://app/ protocol. No live .NET tool or agent bridge yet.
+- Electron 45 sandboxed shell, minimal context-isolated preload API and custom escode://app/ protocol. Read-only authenticated .NET capability bridge in progress (G1); no live tool or agent execution.
 - Versioned non-secret preferences and layout state; selected theme/density/locale/panel mode persisted safely.
 - Theme CSS custom properties generated from design/tokens.json.
 - 15 draft JSON Schema service contracts and separate Windows IPC/policy/revision/retry spikes.
