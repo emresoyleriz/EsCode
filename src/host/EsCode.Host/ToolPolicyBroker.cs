@@ -23,7 +23,7 @@ internal sealed class ToolPolicyBroker
     };
     private static readonly HashSet<string> SupervisedTools = new(StringComparer.Ordinal)
     {
-        "workspace.patch", "process.build", "process.test", "git.commit", "git.push", "git.merge"
+        "workspace.patch", "process.build", "process.test", "git.worktree", "git.commit", "git.push", "git.merge"
     };
 
     internal ToolPolicyBroker(BrokerMode mode, string workspaceId, Func<DateTimeOffset>? utcNow = null)
