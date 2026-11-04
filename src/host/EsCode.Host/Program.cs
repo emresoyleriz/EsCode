@@ -3,6 +3,14 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 
+if (args.Contains("--agent-plan-spike", StringComparer.Ordinal))
+{
+    var passed = await AgentPlanSpike.RunAsync();
+    Console.WriteLine(passed ? "AGENT_PLAN_SPIKE_PASS" : "AGENT_PLAN_SPIKE_FAIL");
+    return passed ? 0 : 1;
+}
+if (args.Contains("--agent-plan", StringComparer.Ordinal))
+    return await AgentPlanCommand.RunAsync(args);
 if (args.Contains("--chat-spike", StringComparer.Ordinal))
 {
     var passed = await ProviderChatSpike.RunAsync();

@@ -41,3 +41,7 @@ GitHub Actions tests Node state/contracts, UI build and Playwright screenshots a
 
 ## Release discipline
 Every Story needs verified positive and negative tests, relevant UX design approval and reviewer evidence. Commit/push/merge controls remain with the user. Main-branch protection requires repository owner confirmation in GitHub Settings. The original V18/V19 archive documentation is distributed separately and remains pending full GitHub import.
+
+
+## Current development package status
+See [Package Progress / Remaining Gates](docs/planning/PACKAGE_PROGRESS_2026-11-04.md). Passing isolated feature CI does not certify a complete AI agent IDE.
