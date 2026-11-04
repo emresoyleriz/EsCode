@@ -14,7 +14,9 @@
     "visual": "node scripts/visual-snapshots.mjs",
     "desktop": "electron .",
     "predev": "node scripts/generate-theme.mjs",
-    "prebuild": "node scripts/generate-theme.mjs"
+    "prebuild": "node scripts/generate-theme.mjs",
+    "check:syntax": "node scripts/check-syntax.mjs",
+    "check:foundation": "node --test tests/foundation.test.js"
   },
   "dependencies": {
     "react": "19.3.1",

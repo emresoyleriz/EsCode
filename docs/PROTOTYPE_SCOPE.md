@@ -1,34 +1,35 @@
-# EsCode — UI Foundation Scope (Post-Merge)
+# EsCode — Desktop foundation scope (4 November 2026)
 
-**Implementation stage:** browser-based interactive UI prototype, not the production Electron+React+Monaco desktop application.
+**Current state:** Electron + React + locally bundled Monaco UI foundation. **Not** a production, autonomous or complete agent IDE.
 
-## Demonstrated in main
-- 13 navigable screen surfaces, dark/light themes, density profiles and command palette.
-- Basic client-side panel toggles, settings UI and visual code preview.
-- 15 draft JSON schemas and structural tests.
-- GitHub Actions visual smoke run captures 26 light/dark screenshots and verifies navigation.
-- Limited Windows .NET named pipe, approval scope, revision and retry guard smoke checks.
-- Main CI: https://github.com/emresoyleriz/EsCode/actions/runs/40899370170 — all three jobs successful.
+## Working foundation (code present; release tests still needed)
 
-## Missing production behavior
-- Real Electron, React, Monaco, LSP, debugging, OS commands and agent execution.
-- Persisted layout and preferences; full translations (locale dropdown is not i18n).
-- Actual docking/drag/floating, snapshot restoration and authentic file selection behavior (displayed code is static).
-- Full keyboard/focus/assistive-tech usability, responsive/high-DPI Windows multi-monitor acceptance, human-approved visual references and measured p95 performance.
-- Robust client and backend authentication, sandbox adversarial tests, durable storage recovery, Git and model integrations.
-- Reproducible package-lock / npm ci and complete V18 documentation import.
+- Thirteen-screen navigation concept with original dark/light design tokens and TR/EN dictionary.
+- Actual Monaco editor with in-memory editable buffers and local workers.
+- Sandboxed Electron Main window, isolated preload bridge exposing read-only capabilities, custom escode:// protocol.
+- Versioned non-secret preferences and layout settings, plus screenshot-smoke tooling.
+- Fifteen draft JSON contracts and individual .NET Windows policy/IPC/revision/recovery spikes.
+- Exact NPM dependency versions and committed package-lock.json; npm ci is already used by CI.
 
-## Run the existing preview
+## Not yet delivered
+
+- Read/write real workspace files, durable dirty-buffer recovery, completed docking/floating or full accessibility verification.
+- Production authenticated Electron↔Host transport, secure Tool Broker, durable task state and SQLite journal.
+- Live model chat, provider streaming, tool calling, autonomous coding, safe patch execution or real Git agent workflow.
+- Signed Windows installer/updater, threat-tested OS sandbox, trusted release and human-approved UI acceptance.
+
+## Historical correction
+
+Older versions of this document described a vanilla DOM static-code preview and a missing package-lock.json. These claims became stale after the Electron/React/Monaco changes. Baseline UI/Windows smoke success is **not** production acceptance.
+
+## Run and verify
 
 ```sh
-npm install
+npm ci
+npm run check:syntax
 npm test
-npm run dev
+npm run build
+npm run desktop
 ```
 
-Use GitHub Actions for CI evidence. Tests that pass prove the explicitly tested subset; they do not certify production architecture or release quality.
-
-## Tracking
-- [Merged PR #82](https://github.com/emresoyleriz/EsCode/pull/82)
-- [UI-GATE #81](https://github.com/emresoyleriz/EsCode/issues/81)
-- [Post-merge audit issues #83–#87](https://github.com/emresoyleriz/EsCode/issues?q=is%3Aissue+is%3Aopen+AUDIT)
+Run the .NET Host separately for its limited Windows spikes; there is no connected agent transport yet. Follow [G0 runbook](G0_FOUNDATION_RUNBOOK.md) for release evidence.

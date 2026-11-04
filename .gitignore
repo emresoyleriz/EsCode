@@ -10,3 +10,10 @@ coverage/
 .DS_Store
 
 src/generated-tokens.css
+
+# Windows/.NET and UI test outputs
+.vs/
+**/bin/
+**/obj/
+TestResults/
+playwright-report/
