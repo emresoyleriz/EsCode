@@ -48,7 +48,7 @@ function App(){
  const [notice,setNotice]=useState("");
  const [role,setRole]=useState("Supervised");
  const [prompt,setPrompt]=useState("");
- const [ipcStatus,setIpcStatus]=useState("browser-preview");
+ const [hostCaps,setHostCaps]=useState({mode:"browser-preview",hostConnected:false});
  const lastFocus=useRef(null);
  const [floatPosition,setFloatPosition]=useState(null);
  const dragging=useRef(null);
@@ -64,7 +64,7 @@ function App(){
    if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="k"){e.preventDefault();if(palette)closePalette();else openPalette();}
    if(e.key==="Escape"&&palette){e.preventDefault();closePalette();}
  };document.addEventListener("keydown",handle);return()=>document.removeEventListener("keydown",handle);},[palette]);
- useEffect(()=>{let active=true;window.escode?.capabilities?.().then(s=>{if(active&&s?.mode)setIpcStatus(s.mode)}).catch(()=>{});return()=>{active=false}},[]);
+ useEffect(()=>{let active=true;window.escode?.capabilities?.().then(s=>{if(active&&s?.mode)setHostCaps({mode:s.mode,hostConnected:s.hostConnected===true})}).catch(()=>{});return()=>{active=false}},[]);
  const onSelectFile=(name)=>{setSelectedFile(name);setPage("ide");};
  const dirty=buffers[selectedFile]!==seed[selectedFile];
  const agentWidth=prefs.agentWidth;
@@ -133,7 +133,7 @@ function App(){
     <main id="main-content" className={`workspace ${page==="ide"?"editor-workspace":""}`}>{content()}</main>
     {prefs.agentMode!=="hidden"&&<>{!float&&<div className="agent-resize" role="separator" tabIndex={0} aria-label="Resize agent panel" aria-orientation="vertical" onPointerDown={startResize} onPointerMove={resize} onPointerUp={endResize} onKeyDown={e=>{if(e.key==="ArrowLeft")change("agentWidth",Math.min(640,agentWidth+20));if(e.key==="ArrowRight")change("agentWidth",Math.max(240,agentWidth-20))}}/>}{agent}</>}
    </div>
-   <footer className="statusbar"><span className="green">●</span> {dictionary("prototype")} <span>Windows 11 x64 / {ipcStatus}</span><span className="right">{dictionary("offline")} · {prefs.locale}</span></footer>
+   <footer className="statusbar"><span className="green">●</span> {dictionary("prototype")} <span>Windows 11 x64 / {hostCaps.mode}</span><span className="right">{hostCaps.hostConnected?(prefs.locale==="TR"?"Host bağlı (salt okunur)":"Host connected (read-only)"):dictionary("offline")} · {prefs.locale}</span></footer>
   </div>
   {palette&&<div className="overlay" onMouseDown={e=>{if(e.target===e.currentTarget)closePalette()}}>
    <div className="palette" role="dialog" aria-modal="true" aria-label={dictionary("search")}>

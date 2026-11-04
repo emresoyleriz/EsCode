@@ -1,18 +1,17 @@
-# EsCode .NET Host — IPC Spike
+# EsCode .NET Host — Security boundary
 
-This is **NOT** a production-ready .NET Host.
+The .NET 10 Host includes isolated Windows IPC, policy, revision and recovery spikes. G1 also introduces an actual authenticated **capabilities-only** Named Pipe connection from Electron Main.
 
-Run on Windows 11 x64 with .NET 10 SDK:
+Windows build and bridge integration:
 
-```powershell
-dotnet run --project src/host/EsCode.Host -- --ipc-spike
-```
+    dotnet build src/host/EsCode.Host/EsCode.Host.csproj -c Release
+    node --test tests/windows/ipc-host.test.mjs
 
-This bounded-frame local handshake verifies:
-- A randomly named pipe and a random session token.
-- `PipeOptions.CurrentUserOnly` where supported on Windows.
-- Exact protocol version and handshake message type.
-- Fixed-time token comparison; invalid token/version/type rejected by the authorization function.
-- Maximum 4096-byte framed input.
+The Host is started by Electron Main with the --serve-ipc switch and a secret bootstrap through stdin. Do not launch --serve-ipc directly without the matching parent protocol. Manual smoke switches remain available:
 
-**Does not verify:** cross-user ACL attack test, hostile process impersonation attempts, OS token restrictions, process supervisor, replay under reconnect, denial-of-service load, event streaming, long-running host, tool broker permissions or recovery. **P0 Secure IPC gate remains OPEN.**
+    dotnet run --project src/host/EsCode.Host -c Release -- --ipc-spike
+    dotnet run --project src/host/EsCode.Host -c Release -- --policy-spike
+    dotnet run --project src/host/EsCode.Host -c Release -- --revision-spike
+    dotnet run --project src/host/EsCode.Host -c Release -- --recovery-spike
+
+**Not certified:** cross-user/impersonation defense, Host process isolation, OS sandbox, persistent authenticated event streams, file or terminal tool authorization, crash-safe journal, model provider and agent runtime. See docs/G1_IPC_BRIDGE.md and docs/TECHNICAL_GATES_V20.md.

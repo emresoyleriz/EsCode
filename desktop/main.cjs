@@ -2,15 +2,18 @@ const {app,BrowserWindow,ipcMain,net,protocol,session}=require("electron");
 const path=require("node:path");
 const fs=require("node:fs");
 const {pathToFileURL}=require("node:url");
+const {startManagedHost}=require("./host-bridge.cjs");
 
 const ROOT=path.resolve(__dirname,"../dist");
 protocol.registerSchemesAsPrivileged([{scheme:"escode",privileges:{standard:true,secure:true,supportFetchAPI:true,stream:true}}]);
 app.enableSandbox();
 let mainWindow;
+let managedHost;
 
 function allowedSender(event){
  const url=event.senderFrame?.url??"";
  return event.sender===mainWindow?.webContents &&
+    event.senderFrame===mainWindow?.webContents.mainFrame &&
     (url.startsWith("escode://app/") || (process.env.ESCODE_DEV_SERVER==="1"&&url.startsWith("http://127.0.0.1:5173/")));
 }
 function createWindow(){
@@ -41,11 +44,19 @@ app.whenReady().then(()=>{
       return new Response("Not found",{status:404});
    return net.fetch(pathToFileURL(file).toString());
  });
- ipcMain.handle("escode:capabilities",event=>{
+ // Read-only, authenticated Host capability query only. Renderer cannot invoke tools.
+ try{managedHost=startManagedHost();}catch{managedHost=null;}
+ ipcMain.handle("escode:capabilities",async event=>{
    if(!allowedSender(event))throw new Error("Unauthorized sender");
-   return Object.freeze({mode:"electron-preview",protocolVersion:1,safeRenderer:true,hostConnected:false});
+   try{
+     const result=await managedHost?.capabilities();
+     if(result)return result;
+   }catch{/* Host unavailable; never trust unauthenticated responses. */}
+   return Object.freeze({mode:process.platform==="win32"?"host-unavailable":"electron-preview",
+     protocolVersion:1,safeRenderer:true,hostConnected:false});
  });
  createWindow();
  app.on("activate",()=>{if(BrowserWindow.getAllWindows().length===0)createWindow()});
 }).catch(error=>{console.error("Desktop bootstrap failed:",error);app.quit()});
+app.on("before-quit",()=>managedHost?.stop());
 app.on("window-all-closed",()=>{if(process.platform!=="darwin")app.quit()});
