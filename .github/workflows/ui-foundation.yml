@@ -65,6 +65,8 @@ jobs:
         run: dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj --configuration Release --no-build -- --broker-policy-spike
       - name: Verify durable SQLite operation journal and restart recovery
         run: dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj --configuration Release --no-build -- --journal-spike
+      - name: Verify read-only workspace path and UTF-8 protections
+        run: dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj --configuration Release --no-build -- --workspace-read-spike
       - name: Verify Windows Job Object containment
         run: dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj --configuration Release --no-build -- --worker-containment-spike
       - name: Verify real Node to .NET Host IPC with negative scenarios
