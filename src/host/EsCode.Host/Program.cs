@@ -3,6 +3,14 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 
+if (args.Contains("--chat-spike", StringComparer.Ordinal))
+{
+    var passed = await ProviderChatSpike.RunAsync();
+    Console.WriteLine(passed ? "PROVIDER_CHAT_SPIKE_PASS" : "PROVIDER_CHAT_SPIKE_FAIL");
+    return passed ? 0 : 1;
+}
+if (args.Contains("--chat", StringComparer.Ordinal))
+    return await ProviderChatCommand.RunAsync(args);
 if (args.Contains("--provider-probe", StringComparer.Ordinal)) return await ProviderDiagnostics.RunAsync(args);
 if (args.Contains("--serve-ipc", StringComparer.Ordinal)) return await PipeHost.RunAsync();
 if (args.Contains("--worker-containment-child", StringComparer.Ordinal))

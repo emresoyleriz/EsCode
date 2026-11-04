@@ -69,6 +69,8 @@ jobs:
         run: dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj --configuration Release --no-build -- --workspace-read-spike
       - name: Verify supervised Git worktree creation and grant denial
         run: dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj --configuration Release --no-build -- --git-worktree-spike
+      - name: Verify streamed OpenAI-compatible provider chat and failures
+        run: dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj --configuration Release --no-build -- --chat-spike
       - name: Verify Windows Job Object containment
         run: dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj --configuration Release --no-build -- --worker-containment-spike
       - name: Verify real Node to .NET Host IPC with negative scenarios
