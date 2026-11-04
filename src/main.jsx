@@ -1,6 +1,7 @@
 import React,{useState,useEffect,useRef,Suspense} from "react";
 import {createRoot} from "react-dom/client";
 import {NAV} from "./state.js";
+import {openEditorTab,closeEditorTab} from "./editor-tabs.js";
 import {t} from "./i18n.js";
 import {DEFAULT_SETTINGS,readSettings,saveSettings,resetSettings} from "./settings.js";
 import "./styles.css";
@@ -44,6 +45,7 @@ function App(){
  const [query,setQuery]=useState("");
  const [palette,setPalette]=useState(false);
  const [selectedFile,setSelectedFile]=useState("WorkspaceService.cs");
+ const [openTabs,setOpenTabs]=useState(["WorkspaceService.cs"]);
  const [buffers,setBuffers]=useState(seed);
  const [notice,setNotice]=useState("");
  const [role,setRole]=useState("Supervised");
@@ -65,7 +67,8 @@ function App(){
    if(e.key==="Escape"&&palette){e.preventDefault();closePalette();}
  };document.addEventListener("keydown",handle);return()=>document.removeEventListener("keydown",handle);},[palette]);
  useEffect(()=>{let active=true;window.escode?.capabilities?.().then(s=>{if(active&&s?.mode)setHostCaps({mode:s.mode,hostConnected:s.hostConnected===true})}).catch(()=>{});return()=>{active=false}},[]);
- const onSelectFile=(name)=>{setSelectedFile(name);setPage("ide");};
+ const onSelectFile=(name)=>{setOpenTabs(current=>openEditorTab(current,name));setSelectedFile(name);setPage("ide");};
+ const onCloseFile=(name)=>{const next=closeEditorTab(openTabs,selectedFile,name);setOpenTabs(next.tabs);setSelectedFile(next.selected);};
  const dirty=buffers[selectedFile]!==seed[selectedFile];
  const agentWidth=prefs.agentWidth;
  const startResize=e=>{if(e.button!==0)return;panelResize.current={x:e.clientX,width:agentWidth};e.currentTarget.setPointerCapture(e.pointerId);};
@@ -84,12 +87,12 @@ function App(){
   if(page==="ide")return <div className="ide-work">
     <aside className="filetree" aria-label={dictionary("fileTree")}><div className="section-label">{dictionary("fileTree")}</div><div className="tree-row open">⌄ &nbsp; ESCODE</div><div className="tree-row indent">⌄ &nbsp; src</div>{Object.keys(seed).map(name=><button key={name} className={`tree-row indent2 ${selectedFile===name?"selected":""}`} aria-current={selectedFile===name?"page":undefined} onClick={()=>onSelectFile(name)}>⌑ &nbsp; {name}{buffers[name]!==seed[name]?" •":""}</button>)}</aside>
     <div className="editor">
-      <div className="tabs"><div className="active-tab"><span className="dot-code">●</span>{selectedFile}{dirty?" •":""}</div></div>
+      <div className="tabs" role="tablist" aria-label={dictionary("codeTitle")}>{openTabs.map(name=><div className={`active-tab ${selectedFile===name?"":"inactive-tab"}`} key={name}><button type="button" className="editor-tab-select" role="tab" aria-selected={selectedFile===name} onClick={()=>onSelectFile(name)}><span className="dot-code">●</span>{name}{buffers[name]!==seed[name]?" •":""}</button>{openTabs.length>1&&<button type="button" className="editor-tab-close" aria-label={`Close ${name}`} onClick={()=>onCloseFile(name)}>×</button>}</div>)}</div>
       <div className="editor-toolbar"><span>src / {selectedFile} {dirty&&tag(dictionary("dirty"),"warn")}</span><span>{selectedFile.endsWith(".json")?"JSON":"C#"} · UTF-8</span></div>
       <div className="monaco-container" aria-label={dictionary("codeTitle")}><Suspense fallback={<div className="editor-loading">Monaco Editor…</div>}>
         <Monaco key={selectedFile} path={selectedFile} language={selectedFile.endsWith(".json")?"json":"csharp"} theme={prefs.theme==="dark"?"vs-dark":"light"} value={buffers[selectedFile]} options={{fontSize:13,minimap:{enabled:false},automaticLayout:true,scrollBeyondLastLine:false,wordWrap:"off",fontLigatures:true,readOnly:false,accessibilitySupport:"auto"}} onChange={v=>setBuffers(p=>({...p,[selectedFile]:v??""}))}/>
       </Suspense></div>
-      {prefs.terminalOpen&&<div className="terminal"><div className="terminal-head"><span>{dictionary("terminalTitle")}</span><button onClick={()=>change("terminalOpen",false)} aria-label={dictionary("close")}>×</button></div><div className="terminal-body"><span className="term-dim">PS C:\EsCode&gt;</span> dotnet test<br/><span className="green">✓</span> {dictionary("mock")}<br/><span className="term-dim">PS C:\EsCode&gt; _</span></div></div>}
+      {prefs.terminalOpen&&<div className="terminal"><div className="terminal-head"><span>{dictionary("terminalTitle")}</span><button onClick={()=>change("terminalOpen",false)} aria-label={dictionary("close")}>×</button></div><div className="terminal-body"><span className="term-dim">PS C:\EsCode&gt;</span> dotnet test<br/><span className="term-dim">{dictionary("notConnected")} — {dictionary("mock")}</span><br/><span className="term-dim">PS C:\EsCode&gt; _</span></div></div>}
     </div></div>;
   if(page==="welcome")return <div className="cards-grid">{tile(dictionary("welcomeTitle"),dictionary("prototype"),<><div className="hero-icon">⌘</div><button className="primary" onClick={()=>navigate("ide")}>{dictionary("openWorkspace")} →</button></>)}{tile(dictionary("recent"),"EsCode",<div className="list-row">◇ &nbsp; EsCode <span>{dictionary("prototype")}</span></div>)}{tile(dictionary("restore"),dictionary("noConnection"),<><p>{dictionary("restoreHelp")}</p><button className="secondary" onClick={()=>navigate("recovery")}>{dictionary("recovery")} →</button></>)}</div>;
   if(page==="agents")return <div className="cards-grid two">{tile(dictionary("agents"),dictionary("noConnection"),["Architect","Developer","Reviewer"].map(x=><div className="agent-row" key={x}>✧ {x} {tag(dictionary("offline"))}</div>))}{tile(dictionary("taskFlow"),dictionary("taskHelp"),<div className="timeline">{TASKS.map(step=><div key={step}>○ &nbsp; {step}</div>)}</div>)}{tile(dictionary("newTask"),dictionary("prototype"),<><textarea className="prompt" value={prompt} onChange={e=>setPrompt(e.target.value)} aria-label={dictionary("newTask")} placeholder={dictionary("agentAsk")}/><button className="primary" onClick={preview}>{dictionary("newTask")} →</button></>)}</div>;
