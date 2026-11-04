@@ -5,6 +5,17 @@ using System.Text.Json;
 
 if (args.Contains("--provider-probe", StringComparer.Ordinal)) return await ProviderDiagnostics.RunAsync(args);
 if (args.Contains("--serve-ipc", StringComparer.Ordinal)) return await PipeHost.RunAsync();
+if (args.Contains("--worker-containment-child", StringComparer.Ordinal))
+{
+    await Task.Delay(TimeSpan.FromSeconds(30));
+    return 0;
+}
+if (args.Contains("--worker-containment-spike", StringComparer.Ordinal))
+{
+    var passed = await WorkerContainmentSpike.RunAsync();
+    Console.WriteLine(passed ? "WORKER_CONTAINMENT_SPIKE_PASS" : "WORKER_CONTAINMENT_SPIKE_FAIL");
+    return passed ? 0 : 1;
+}
 if (args.Contains("--broker-policy-spike", StringComparer.Ordinal))
 {
     var passed = ToolPolicyBrokerSpike.Run();
