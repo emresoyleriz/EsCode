@@ -61,6 +61,8 @@ jobs:
         run: dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj --configuration Release --no-build -- --revision-spike
       - name: Verify uncertain-outcome retry guard
         run: dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj --configuration Release --no-build -- --recovery-spike
+      - name: Verify fail-closed Tool Broker authorization
+        run: dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj --configuration Release --no-build -- --broker-policy-spike
       - name: Verify real Node to .NET Host IPC with negative scenarios
         run: node --test tests/windows/ipc-host.test.mjs
   dependency-audit:
