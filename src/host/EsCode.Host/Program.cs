@@ -3,6 +3,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 
+if (args.Contains("--provider-probe", StringComparer.Ordinal)) return await ProviderDiagnostics.RunAsync(args);
 if (args.Contains("--policy-spike", StringComparer.Ordinal)) return PolicySpike.Run() ? 0 : 1;
 if (args.Contains("--revision-spike", StringComparer.Ordinal)) return RevisionSpike.Run() ? 0 : 1;
 if (args.Contains("--recovery-spike", StringComparer.Ordinal)) return RecoverySpike.Run() ? 0 : 1;
