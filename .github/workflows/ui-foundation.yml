@@ -73,6 +73,8 @@ jobs:
         run: dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj --configuration Release --no-build -- --journal-partitions-spike
       - name: Verify DPAPI encrypted unsaved-buffer recovery, migration and corruption refusal
         run: dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj --configuration Release --no-build -- --session-checkpoint-spike
+      - name: Verify SQLite page-quota exhaustion, killed open transaction and failed v1 migration
+        run: dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj --configuration Release --no-build -- --journal-fault-spike
       - name: Verify read-only workspace path and UTF-8 protections
         run: dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj --configuration Release --no-build -- --workspace-read-spike
       - name: Verify multi-root workspace isolation and stale revision rejection

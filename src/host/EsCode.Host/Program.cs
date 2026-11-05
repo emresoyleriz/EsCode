@@ -148,6 +148,14 @@ if (args.Contains("--journal-safety-spike", StringComparer.Ordinal))
 }
 if (args.Contains("--journal-kill-child", StringComparer.Ordinal))
     return await JournalCrashRecoverySpike.RunChildAsync(args);
+if (args.Contains("--journal-fault-child", StringComparer.Ordinal))
+    return await JournalDiskFaultSpike.ChildAsync(args);
+if (args.Contains("--journal-fault-spike", StringComparer.Ordinal))
+{
+    var passed = await JournalDiskFaultSpike.RunAsync();
+    Console.WriteLine(passed ? "JOURNAL_FAULT_PASS" : "JOURNAL_FAULT_FAIL");
+    return passed ? 0 : 1;
+}
 if (args.Contains("--journal-crash-spike", StringComparer.Ordinal))
 {
     var passed = await JournalCrashRecoverySpike.RunAsync();
