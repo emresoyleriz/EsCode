@@ -7,12 +7,12 @@ using Microsoft.Data.Sqlite;
 internal enum JournalState { Prepared, Executing, OutcomeUnknown, Succeeded, Failed, Reconciled }
 internal sealed record JournalOperation(string Id, string Kind, JournalState State, bool Idempotent, bool EvidenceEffectAbsent);
 
-internal sealed class SqliteJournal : IDisposable
+internal sealed partial class SqliteJournal : IDisposable
 {
     private readonly SqliteConnection _db;
     private readonly FileStream _ownerLock;
     private readonly object _gate = new();
-    private const int Version = 1;
+    private const int Version = 2;
     private static readonly Regex SafeId = new("^[A-Za-z0-9_-]{1,100}$", RegexOptions.CultureInvariant);
     private static readonly Regex Sha = new("^sha256:[a-f0-9]{64}$", RegexOptions.CultureInvariant);
 
@@ -82,12 +82,20 @@ internal sealed class SqliteJournal : IDisposable
               git_ref TEXT NOT NULL, manifest_sha256 TEXT NOT NULL,
               created_utc TEXT NOT NULL
             );
+            CREATE TABLE IF NOT EXISTS session_snapshots (
+              checkpoint_id TEXT PRIMARY KEY REFERENCES checkpoints(id),
+              workspace_id TEXT NOT NULL,
+              run_id TEXT NOT NULL,
+              run_state TEXT NOT NULL,
+              encrypted_payload BLOB NOT NULL,
+              created_utc TEXT NOT NULL
+            );
             """;
         command.ExecuteNonQuery();
         ValidateSchema(tx);
         using var versionCommand = _db.CreateCommand();
         versionCommand.Transaction = tx;
-        versionCommand.CommandText = "PRAGMA user_version=1;";
+        versionCommand.CommandText = "PRAGMA user_version=2;";
         versionCommand.ExecuteNonQuery();
         tx.Commit();
     }
@@ -100,7 +108,8 @@ internal sealed class SqliteJournal : IDisposable
         {
             ["operations"] = ["id","kind","state","args_sha256","idempotent","evidence_effect_absent","updated_utc"],
             ["events"] = ["sequence","operation_id","state","updated_utc"],
-            ["checkpoints"] = ["id","workspace_id","git_ref","manifest_sha256","created_utc"]
+            ["checkpoints"] = ["id","workspace_id","git_ref","manifest_sha256","created_utc"],
+            ["session_snapshots"] = ["checkpoint_id","workspace_id","run_id","run_state","encrypted_payload","created_utc"]
         };
         foreach (var entry in required)
         {
