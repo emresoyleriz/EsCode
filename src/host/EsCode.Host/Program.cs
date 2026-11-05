@@ -9,6 +9,14 @@ if (args.Contains("--plugin-manifest-spike", StringComparer.Ordinal))
     Console.WriteLine(passed ? "PLUGIN_MANIFEST_SPIKE_PASS" : "PLUGIN_MANIFEST_SPIKE_FAIL");
     return passed ? 0 : 1;
 }
+if (args.Contains("--symbol-index-spike", StringComparer.Ordinal))
+{
+    var passed = CodeSymbolIndexSpike.Run();
+    Console.WriteLine(passed ? "CODE_SYMBOL_INDEX_PASS" : "CODE_SYMBOL_INDEX_FAIL");
+    return passed ? 0 : 1;
+}
+if (args.Contains("--symbol-index", StringComparer.Ordinal))
+    return CodeSymbolIndexCommand.Run(args);
 if (args.Contains("--code-index-spike", StringComparer.Ordinal))
 {
     var passed = CodebaseIndexSpike.Run();

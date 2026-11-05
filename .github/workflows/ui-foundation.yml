@@ -95,6 +95,8 @@ jobs:
         run: dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj --configuration Release --no-build -- --plugin-manifest-spike
       - name: Verify bounded read-only SQLite FTS codebase index and stale-hit denial
         run: dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj --configuration Release --no-build -- --code-index-spike
+      - name: Verify bounded C#/TS/Python/SQL symbols, context and freshness
+        run: dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj --configuration Release --no-build -- --symbol-index-spike
       - name: Verify Windows Job Object containment
         run: dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj --configuration Release --no-build -- --worker-containment-spike
       - name: Verify suspend-before-Job-assignment lifecycle (harmless child only)
