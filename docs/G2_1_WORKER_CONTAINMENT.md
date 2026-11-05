@@ -26,3 +26,13 @@ dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj -c Release --no-bui
 ```
 
 **Do not treat this as a full sandbox.** The process still uses the caller's privileges, environment, filesystem and network access. Restricted tokens/AppContainer, deny-by-default egress, handle policy and hostile Win11 VM attack tests remain blocking before arbitrary tool execution. No production agent tool invokes this spike.
+
+## G2.1 AppContainer OS capability probe
+
+The Windows CI now creates a **disposable, uniquely named** AppContainer profile with no capabilities, derives the same SID through the OS, verifies SID equality, releases both SID allocations and deletes the profile in a finally block.
+
+```powershell
+dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj -c Release --no-build -- --appcontainer-profile-spike
+```
+
+This is **only a capability probe**. An AppContainer profile does not place an arbitrary child in an AppContainer by itself. The actual AppContainer process launch, restricted token, job assignment, filesystem/network denial, cross-user hostile tests and approved tool broker integration must pass before untrusted code runs. Inability to provision an AppContainer MUST NOT silently fall back to a same-user unrestricted child. The profile name is generated inside trusted Host code; no renderer/model-provided name is accepted.

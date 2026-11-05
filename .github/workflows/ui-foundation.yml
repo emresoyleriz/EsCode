@@ -85,6 +85,8 @@ jobs:
         run: dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj --configuration Release --no-build -- --worker-containment-spike
       - name: Verify suspend-before-Job-assignment lifecycle (harmless child only)
         run: dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj --configuration Release --no-build -- --suspended-worker-spike
+      - name: Verify disposable Windows AppContainer profile and SID lifecycle
+        run: dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj --configuration Release --no-build -- --appcontainer-profile-spike
       - name: Verify real Node to .NET Host IPC with negative scenarios
         run: node --test tests/windows/ipc-host.test.mjs
   dependency-audit:
