@@ -29,6 +29,11 @@ internal static class ProviderChat
         if (string.IsNullOrWhiteSpace(prompt) || prompt.Length > 8192)
             throw new ArgumentException("Prompt must contain 1–8192 characters");
         var endpoint = Endpoint(baseUrl);
+        // ResponseHeadersRead ends HttpClient.Timeout supervision once headers arrive;
+        // keep one cancellation deadline covering the entire SSE response body.
+        using var timeout = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        timeout.CancelAfter(TimeSpan.FromSeconds(90));
+        var token = timeout.Token;
         using var handler = new HttpClientHandler { AllowAutoRedirect = false };
         using var client = new HttpClient(handler) { Timeout = TimeSpan.FromSeconds(90) };
         using var request = new HttpRequestMessage(HttpMethod.Post, endpoint);
@@ -41,20 +46,19 @@ internal static class ProviderChat
             stream = true
         }), Encoding.UTF8, "application/json");
         using var response = await client.SendAsync(
-            request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+            request, HttpCompletionOption.ResponseHeadersRead, token);
         if (response.StatusCode != HttpStatusCode.OK)
             throw new InvalidOperationException($"Provider HTTP {(int)response.StatusCode}");
         if (response.Content.Headers.ContentType?.MediaType != "text/event-stream")
             throw new InvalidDataException("Provider did not return an SSE stream");
-        await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
-        using var reader = new StreamReader(stream, new UTF8Encoding(false, true));
+        await using var stream = await response.Content.ReadAsStreamAsync(token);
+        var reader = new BoundedSseLineReader(stream);
         var result = new StringBuilder();
         var eventCount = 0;
         while (true)
         {
-            var line = await reader.ReadLineAsync(cancellationToken);
+            var line = await reader.ReadLineAsync(token);
             if (line is null) throw new InvalidDataException("Provider stream ended without [DONE]");
-            if (line.Length > 65_536) throw new InvalidDataException("Provider SSE event too large");
             if (!line.StartsWith("data:", StringComparison.Ordinal)) continue;
             var body = line[5..].TrimStart();
             if (body == "[DONE]") return result.ToString();
@@ -114,6 +118,60 @@ internal static class ProviderChatCommand
             // No provider body, prompt, URL, API key or raw exception message in diagnostics.
             Console.Error.WriteLine($"Chat request failed: {ex.GetType().Name}");
             return 1;
+        }
+    }
+}
+
+
+// Reads SSE as bounded UTF-8 bytes, not StreamReader.ReadLineAsync (which can
+// allocate an unbounded line before the caller validates its length).
+internal sealed class BoundedSseLineReader
+{
+    private const int MaxLineBytes = 65_536;
+    private const long MaxBodyBytes = 8L * 1024 * 1024;
+    private static readonly UTF8Encoding StrictUtf8 = new(false, true);
+    private readonly Stream _stream;
+    private readonly byte[] _buffer = new byte[4096];
+    private int _read;
+    private int _offset;
+    private long _total;
+
+    internal BoundedSseLineReader(Stream stream) => _stream = stream;
+
+    internal async Task<string?> ReadLineAsync(CancellationToken cancellationToken)
+    {
+        using var line = new MemoryStream();
+        while (true)
+        {
+            if (_offset >= _read)
+            {
+                _read = await _stream.ReadAsync(_buffer.AsMemory(), cancellationToken);
+                _offset = 0;
+                if (_read == 0)
+                    return line.Length == 0 ? null : Decode(line);
+            }
+            var next = _buffer[_offset++];
+            if (++_total > MaxBodyBytes)
+                throw new InvalidDataException("Provider response body exceeds limit");
+            if (next == (byte)'\n') return Decode(line);
+            if (line.Length >= MaxLineBytes)
+                throw new InvalidDataException("Provider SSE line exceeds limit");
+            line.WriteByte(next);
+        }
+    }
+
+    private static string Decode(MemoryStream line)
+    {
+        try
+        {
+            var bytes = line.ToArray();
+            if (bytes.Length > 0 && bytes[^1] == (byte)'\r')
+                return StrictUtf8.GetString(bytes, 0, bytes.Length - 1);
+            return StrictUtf8.GetString(bytes);
+        }
+        catch (DecoderFallbackException)
+        {
+            throw new InvalidDataException("Provider SSE contains invalid UTF-8");
         }
     }
 }
