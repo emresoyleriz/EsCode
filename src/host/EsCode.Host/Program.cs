@@ -68,6 +68,12 @@ if (args.Contains("--worker-containment-child", StringComparer.Ordinal))
     await Task.Delay(TimeSpan.FromSeconds(30));
     return 0;
 }
+if (args.Contains("--appcontainer-adversarial-spike", StringComparer.Ordinal))
+{
+    var passed = await AppContainerAdversarialSpike.RunAsync();
+    Console.WriteLine(passed ? "APPCONTAINER_ADVERSARIAL_PASS" : "APPCONTAINER_ADVERSARIAL_FAIL");
+    return passed ? 0 : 1;
+}
 if (args.Contains("--appcontainer-launch-spike", StringComparer.Ordinal))
 {
     var passed = await AppContainerProcessSpike.RunAsync();
