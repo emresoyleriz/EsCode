@@ -88,6 +88,19 @@ internal static class ProviderChatSpike
             return false;
         }
         catch (InvalidOperationException) { }
+        // Oversized, malformed and multibyte lines are validated BEFORE
+        // converting an untrusted response line into a managed string.
+        var bytes = Encoding.UTF8.GetBytes(new string('x', 65_537) + "\n");
+        var oversized = new BoundedSseLineReader(new MemoryStream(bytes));
+        try { await oversized.ReadLineAsync(CancellationToken.None); return false; }
+        catch (InvalidDataException) { }
+        var invalidUtf8 = new BoundedSseLineReader(new MemoryStream(new byte[] { 0xC3, 0x28, 0x0A }));
+        try { await invalidUtf8.ReadLineAsync(CancellationToken.None); return false; }
+        catch (InvalidDataException) { }
+        var utf8 = new BoundedSseLineReader(new MemoryStream(
+            Encoding.UTF8.GetBytes("data: € বাংলা\r\n")));
+        if (await utf8.ReadLineAsync(CancellationToken.None) != "data: € বাংলা") return false;
+        if (await utf8.ReadLineAsync(CancellationToken.None) is not null) return false;
         try { ProviderChat.Endpoint("http://8.8.8.8/v1"); return false; }
         catch (ArgumentException) { }
         try { ProviderChat.Endpoint("https://user:password@example.com/v1"); return false; }
