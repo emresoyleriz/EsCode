@@ -87,6 +87,8 @@ jobs:
         run: dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj --configuration Release --no-build -- --model-catalog-spike
       - name: Verify plan-only durable agent run and failure transitions
         run: dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj --configuration Release --no-build -- --agent-plan-spike
+      - name: Verify durable dependency DAG, pause and fail-closed crash recovery
+        run: dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj --configuration Release --no-build -- --durable-task-dag-spike
       - name: Verify independent untrusted-plan reviewer cannot approve tools
         run: dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj --configuration Release --no-build -- --plan-review-spike
       - name: Verify untrusted plugin manifest and denied execution policy

@@ -10,7 +10,7 @@
 | G4.2 Git branch/worktree | [#98](https://github.com/emresoyleriz/EsCode/pull/98) + bounded Git status/output slice (PR pending) | **PARTIAL** | Hook/filter sandbox, UI grants, conflicts, commit/push/merge and revert |
 | G4.3 Monaco / Terminal / Debugger | [#99](https://github.com/emresoyleriz/EsCode/pull/99) + extension-aware Monaco language dispatch (PR pending) | **PARTIAL** | Real save, LSP/diagnostics, PTY, debugger and cancelable build/test |
 | G5 LLM API / Model Studio | [#100](https://github.com/emresoyleriz/EsCode/pull/100), [#106](https://github.com/emresoyleriz/EsCode/pull/106) + typed local model probe (PR pending) | **PARTIAL** | Secure key vault, chat streaming IPC and multi-provider configuration |
-| G6.1 Agent Runtime | [#101](https://github.com/emresoyleriz/EsCode/pull/101) | **PARTIAL / PR REVIEW** | Real DAG, approval integration, tool loop, stop/resume, context and evidence |
+| G6.1 Agent Runtime | [#101](https://github.com/emresoyleriz/EsCode/pull/101), durable immutable SQLite task DAG (PR pending) | **PARTIAL** | Trusted tool dispatch, durable pause/resume, human approval integration, context/evidence and execution loop |
 | G6.2 Autonomous code workflow | No delivery | **OPEN** | Controlled patch→build→test→review, bounded retries and security gates |
 | G7.1 Codebase Intelligence | Read-only [G7.1 FTS slice](../G7_1_CODEBASE_INDEX.md) (PR pending) | **PARTIAL** | Watcher, symbol graph, multi-root and context budgeting still open |
 | G7.2 Cursor-like advanced coding | Local [Inline Edit slice](../G7_2_INLINE_EDIT.md) (PR pending) | **PARTIAL** | AI edit, LSP, completion, refactor, diagnostics, real save |

@@ -195,6 +195,18 @@ internal sealed class SqliteJournal : IDisposable
         return false;
     }
 
+    internal string? ReadDigest(string id)
+    {
+        CheckId(id);
+        lock (_gate)
+        {
+            using var cmd = _db.CreateCommand();
+            cmd.CommandText = "SELECT args_sha256 FROM operations WHERE id=@id";
+            cmd.Parameters.AddWithValue("@id", id);
+            return cmd.ExecuteScalar() as string;
+        }
+    }
+
     internal JournalOperation? Read(string id)
     {
         CheckId(id);
