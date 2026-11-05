@@ -78,6 +78,12 @@ if (args.Contains("--workspace-read-spike", StringComparer.Ordinal))
     Console.WriteLine(passed ? "WORKSPACE_READ_SPIKE_PASS" : "WORKSPACE_READ_SPIKE_FAIL");
     return passed ? 0 : 1;
 }
+if (args.Contains("--journal-safety-spike", StringComparer.Ordinal))
+{
+    var passed = JournalSafetySpike.Run();
+    Console.WriteLine(passed ? "SQLITE_SAFETY_PASS" : "SQLITE_SAFETY_FAIL");
+    return passed ? 0 : 1;
+}
 if (args.Contains("--journal-kill-child", StringComparer.Ordinal))
     return await JournalCrashRecoverySpike.RunChildAsync(args);
 if (args.Contains("--journal-crash-spike", StringComparer.Ordinal))
