@@ -211,14 +211,28 @@ internal sealed class SqliteJournal : IDisposable
         var full = Path.GetFullPath(destination);
         if (File.Exists(full)) throw new IOException("Backup already exists");
         Directory.CreateDirectory(Path.GetDirectoryName(full)!);
-        lock (_gate)
+        // A consistent SQLite snapshot must be fully written before the
+        // destination name becomes visible. File.Move refuses overwrites.
+        // The unique staging path is on the same filesystem as destination.
+        var staging = full + ".escode-stage-" + Guid.NewGuid().ToString("N");
+        try
         {
-            using var backup = new SqliteConnection(new SqliteConnectionStringBuilder
+            lock (_gate)
             {
-                DataSource = full, Mode = SqliteOpenMode.ReadWriteCreate, Pooling = false
-            }.ToString());
-            backup.Open();
-            _db.BackupDatabase(backup);
+                using (var backup = new SqliteConnection(new SqliteConnectionStringBuilder
+                {
+                    DataSource = staging, Mode = SqliteOpenMode.ReadWriteCreate, Pooling = false
+                }.ToString()))
+                {
+                    backup.Open();
+                    _db.BackupDatabase(backup);
+                }
+                File.Move(staging, full, overwrite: false);
+            }
+        }
+        finally
+        {
+            if (File.Exists(staging)) File.Delete(staging);
         }
     }
 

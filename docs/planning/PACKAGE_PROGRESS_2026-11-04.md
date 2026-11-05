@@ -5,7 +5,7 @@
 | Requested package | Code delivery | Status of complete requested package | Explicit remaining work |
 |---|---|---|---|
 | G2.1 Windows Sandbox | [#95](https://github.com/emresoyleriz/EsCode/pull/95) + suspended-start probe (PR pending) | **PARTIAL** | Restricted token/AppContainer, FS/network egress, cross-user VM attack tests |
-| G3 SQLite / Checkpoint / Recovery | [#96](https://github.com/emresoyleriz/EsCode/pull/96) | **PARTIAL** | Global/workspace DB partition, destructive migration rollback, full crash kill-point and effect reconciliation |
+| G3 SQLite / Checkpoint / Recovery | [#96](https://github.com/emresoyleriz/EsCode/pull/96) + kill-point/backup hardening (PR pending) | **PARTIAL** | Global/workspace DB partition, migration rollback, power-loss/disk faults and trusted external effect verifier |
 | G4.1 Workspace real files | [#97](https://github.com/emresoyleriz/EsCode/pull/97) | **PARTIAL** | Renderer bridge, multi-root, buffer revision, source identity/TOCTOU, approved patch transactions |
 | G4.2 Git branch/worktree | [#98](https://github.com/emresoyleriz/EsCode/pull/98) | **PARTIAL** | Hook/filter sandbox, UI grants, dirty state, conflicts, commit/push/merge and revert |
 | G4.3 Monaco / Terminal / Debugger | [#99](https://github.com/emresoyleriz/EsCode/pull/99) | **PARTIAL** | Real save, LSP/diagnostics, PTY, debugger and cancelable build/test |
