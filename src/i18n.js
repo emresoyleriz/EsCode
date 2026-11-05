@@ -12,6 +12,7 @@ modelTitle:"Model bağlantıları",localModel:"Yerel OpenAI uyumlu sunucu",toolC
 approvalTitle:"Bekleyen onay bulunmuyor",approvalHelp:"Risk, kaynak, süre ve izin kapsamı gerçek backend isteğinde gösterilir.",gitHelp:"Commit, push ve merge işlemleri kullanıcı kontrolündedir.",
 recoveryTitle:"Kurtarma verisi bulunmuyor",recoveryHelp:"Checkpoint ve işlem günlükleri .NET servisinden doğrulanarak gösterilecek.",settingsInfo:"Görsel tercihleri ve yerleşimi düzenle",
 codeTitle:"Editör önizlemesi",dirty:"Kaydedilmemiş değişiklik",mock:"Bu bölüm prototiptir; gerçek Git, dosya veya agent işlemi yapılmaz.",
+inlineEdit:"Satır içi düzenleme",inlineDisclaimer:"Yalnızca bellekte değişir. Dosyaya kaydedilmez ve AI çağrılmaz.",inlineOriginal:"Seçilen kod",inlineReplacement:"Yeni içerik",inlineEmpty:"İmleçte ekleme",inlineCancel:"Vazgeç",inlineAccept:"Değişikliği uygula",inlineNoSelection:"Önce Monaco editörü açın.",inlineStale:"İçerik değişti. Yeniden seçim yapın.",
 fileTree:"DOSYALAR",openPalette:"Komutları aç",role:"Yetki profili",scope:"Yetki kapsamı",terminalTitle:"TERMINAL ÖNİZLEMESİ",
 featureTitle:"Özellik önizlemesi",notConnected:"Bu özellik henüz gerçek servise bağlanmadı.",
 logout:"Oturum kapalı",kbdHelp:"Esc kapatır · Enter seçer",pinned:"Sabitlendi"
@@ -29,6 +30,7 @@ modelTitle:"Model connections",localModel:"Local OpenAI-compatible server",toolC
 approvalTitle:"No pending approvals",approvalHelp:"Actual requests will display risk, resource, expiry and permission scope.",gitHelp:"Commit, push and merge remain user-controlled.",
 recoveryTitle:"No recovery records",recoveryHelp:"Checkpoints and journals will be verified against the .NET Host.",settingsInfo:"Customize visuals and workspace layout",
 codeTitle:"Editor preview",dirty:"Unsaved changes",mock:"Prototype only; no actual Git, filesystem or agent operation is executed.",
+inlineEdit:"Inline Edit",inlineDisclaimer:"Memory only. No disk save or AI call.",inlineOriginal:"Selected code",inlineReplacement:"Replacement text",inlineEmpty:"Insert at cursor",inlineCancel:"Cancel",inlineAccept:"Apply edit",inlineNoSelection:"Open the Monaco editor first.",inlineStale:"Buffer changed. Select the code again.",
 fileTree:"FILES",openPalette:"Open commands",role:"Permission profile",scope:"Approval scope",terminalTitle:"TERMINAL PREVIEW",
 featureTitle:"Feature preview",notConnected:"This feature is not connected to a production service.",
 logout:"Offline",kbdHelp:"Esc closes · Enter selects",pinned:"Pinned"
