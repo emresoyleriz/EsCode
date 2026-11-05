@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://escode.dev/contracts/PluginManifest.schema.json",
   "title": "PluginManifest",
-  "description": "EsCode V14 logical contract, proposed schema for implementation review; not yet security-certified.",
+  "description": "Metadata-only untrusted plugin schema. Schema-valid input grants no execution permission.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -17,30 +17,44 @@
   "properties": {
     "PluginId": {
       "type": "string",
-      "minLength": 1
+      "pattern": "^[a-z][a-z0-9._-]{0,63}$",
+      "maxLength": 64
     },
     "Publisher": {
       "type": "string",
-      "minLength": 1
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$",
+      "maxLength": 64
     },
     "Version": {
       "type": "string",
-      "minLength": 1,
-      "minimum": 0
+      "pattern": "^[0-9]{1,5}\\.[0-9]{1,5}\\.[0-9]{1,5}$",
+      "maxLength": 17
     },
     "Permissions": {
-      "type": "array"
+      "type": "array",
+      "maxItems": 4,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "workspace.read",
+          "workspace.search"
+        ]
+      }
     },
     "TrustLevel": {
       "type": "string",
-      "minLength": 1
+      "const": "untrusted"
     },
     "Compatibility": {
-      "type": "object"
+      "type": "object",
+      "maxProperties": 0,
+      "additionalProperties": false
     },
     "Signature": {
       "type": "string",
-      "minLength": 1
+      "minLength": 1,
+      "description": "Current metadata-only validator denies all unverified signatures."
     },
     "ContractVersion": {
       "type": "integer",

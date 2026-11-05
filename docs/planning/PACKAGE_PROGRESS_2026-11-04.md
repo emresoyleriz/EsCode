@@ -15,7 +15,7 @@
 | G7.1 Codebase Intelligence | Read-only [G7.1 FTS slice](../G7_1_CODEBASE_INDEX.md) (PR pending) | **PARTIAL** | Watcher, symbol graph, multi-root and context budgeting still open |
 | G7.2 Cursor-like advanced coding | Local [Inline Edit slice](../G7_2_INLINE_EDIT.md) (PR pending) | **PARTIAL** | AI edit, LSP, completion, refactor, diagnostics, real save |
 | G8.1 Multi-Agent / Independent Review | Plan critique-only slice (PR pending) | **PARTIAL** | Code diff review, isolated worktrees, reviewer evidence, conflict coordination |
-| G8.2 MCP / Plugin / Browser | No delivery | **OPEN** | Trust manifests, sandboxed MCP and browser session isolation |
+| G8.2 MCP / Plugin / Browser | Metadata-only manifest policy (PR pending) | **PARTIAL** | Cryptographic signature verification, isolated MCP execution and browser sandbox |
 | G9.1 Premium UX / 13 screens | Keyboard-navigation and viewport regression slice (PR pending) | **PARTIAL** | Real functional screens, assistive-technology audit, docking and multi-monitor acceptance |
 | G9.2 Windows Installer / Updates | No delivery | **OPEN** | Signed install, portable packaging, auto-update, rollback, backup |
 | G10 E2E / Stable release | No delivery | **OPEN** | Clean Windows install, C#/Angular/React/Python golden projects, chaos/security and performance signoff |
