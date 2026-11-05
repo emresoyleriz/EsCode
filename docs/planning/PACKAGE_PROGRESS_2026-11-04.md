@@ -12,7 +12,7 @@
 | G5 LLM API / Model Studio | [#100](https://github.com/emresoyleriz/EsCode/pull/100) | **PARTIAL** | Trusted streaming IPC, secure key vault, provider routes/probes, Model Studio UI |
 | G6.1 Agent Runtime | [#101](https://github.com/emresoyleriz/EsCode/pull/101) | **PARTIAL / PR REVIEW** | Real DAG, approval integration, tool loop, stop/resume, context and evidence |
 | G6.2 Autonomous code workflow | No delivery | **OPEN** | Controlled patch→build→test→review, bounded retries and security gates |
-| G7.1 Codebase Intelligence | No delivery | **OPEN** | Incremental index, symbol/FTS retrieval, freshness and token budget |
+| G7.1 Codebase Intelligence | Read-only [G7.1 FTS slice](../G7_1_CODEBASE_INDEX.md) (PR pending) | **PARTIAL** | Watcher, symbol graph, multi-root and context budgeting still open |
 | G7.2 Cursor-like advanced coding | No delivery | **OPEN** | Inline edit, completion, refactor, LSP navigation and diagnostics |
 | G8.1 Multi-Agent / Independent Review | No delivery | **OPEN** | Isolated worktrees, reviewer evidence, conflict coordination |
 | G8.2 MCP / Plugin / Browser | No delivery | **OPEN** | Trust manifests, sandboxed MCP and browser session isolation |
