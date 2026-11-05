@@ -46,3 +46,33 @@ Previously `ReconcileAbsentEffect(id, verificationDigest)` treated **any syntact
 The method now always denies reconciliation and `CanRetry` always returns false, including for legacy journal rows marked Reconciled. No provider request, Git operation, file write or external action will be automatically replayed based on unverifiable evidence. This intentionally disables automated retry until a trusted **external system-of-record verifier** and a provenance-bearing evidence contract exist.
 
 Windows CI `--journal-safety-spike` proves a valid hash cannot authorize retry and confirms that attempting to open an unsupported future SQLite schema cannot downgrade the database version. This is not a replacement for full crash/power-failure validation.
+
+## G3 — Separate global/workspace journals and rollback-safe schema validation
+
+`JournalPartitions` keeps a global journal distinct from each named workspace journal in
+dedicated SQLite files with independent single-owner locks. Workspace IDs are strictly
+lowercase and path-safe; existing redirected state-directory ancestors are denied.
+There is still **no untrusted IPC endpoint** for choosing a database path or running
+external effects.
+
+The journal migration now validates all required columns before setting
+`PRAGMA user_version=1`. Both table creation and the version stamp occur in
+one transaction, so a malformed legacy table causes rollback rather than a
+falsely upgraded database. A partially initialized DB is rejected even when it
+already declares the current schema. Constructor failures also dispose the
+SQLite handle before releasing its owner lock.
+
+Windows CI:
+```powershell
+dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj -c Release --no-build -- --journal-partitions-spike
+```
+
+The test verifies identical operation IDs in three databases remain isolated,
+checkpoint state persists per workspace, crash recovery applies only to the
+affected workspace, concurrent owners are denied, invalid IDs are rejected,
+and malformed v0 migrations leave the original tables/version unchanged.
+
+**G3 remains partial:** File-content checkpoints, real disk-full/power-loss
+testing, backups with verified external manifests, workspace identity migration
+on repo moves, secure per-user filesystem ACLs and trusted verification of
+uncertain external side effects are still required.

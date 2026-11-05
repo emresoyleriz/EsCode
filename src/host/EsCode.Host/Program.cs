@@ -102,6 +102,12 @@ if (args.Contains("--workspace-read-spike", StringComparer.Ordinal))
     Console.WriteLine(passed ? "WORKSPACE_READ_SPIKE_PASS" : "WORKSPACE_READ_SPIKE_FAIL");
     return passed ? 0 : 1;
 }
+if (args.Contains("--journal-partitions-spike", StringComparer.Ordinal))
+{
+    var passed = JournalPartitionSpike.Run();
+    Console.WriteLine(passed ? "JOURNAL_PARTITIONS_PASS" : "JOURNAL_PARTITIONS_FAIL");
+    return passed ? 0 : 1;
+}
 if (args.Contains("--journal-safety-spike", StringComparer.Ordinal))
 {
     var passed = JournalSafetySpike.Run();
