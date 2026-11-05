@@ -25,6 +25,12 @@ if (args.Contains("--plan-review-spike", StringComparer.Ordinal))
 }
 if (args.Contains("--plan-review", StringComparer.Ordinal))
     return await PlanReviewCommand.RunAsync(args);
+if (args.Contains("--durable-task-dag-spike", StringComparer.Ordinal))
+{
+    var passed = DurableTaskGraphSpike.Run();
+    Console.WriteLine(passed ? "DURABLE_TASK_DAG_PASS" : "DURABLE_TASK_DAG_FAIL");
+    return passed ? 0 : 1;
+}
 if (args.Contains("--agent-plan-spike", StringComparer.Ordinal))
 {
     var passed = await AgentPlanSpike.RunAsync();
