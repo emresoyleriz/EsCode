@@ -36,3 +36,31 @@ dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj -c Release --no-bui
 ```
 
 This is **only a capability probe**. An AppContainer profile does not place an arbitrary child in an AppContainer by itself. The actual AppContainer process launch, restricted token, job assignment, filesystem/network denial, cross-user hostile tests and approved tool broker integration must pass before untrusted code runs. Inability to provision an AppContainer MUST NOT silently fall back to a same-user unrestricted child. The profile name is generated inside trusted Host code; no renderer/model-provided name is accepted.
+
+## G2.1 — Real restricted-process launch token verification
+
+The Windows-only `--appcontainer-launch-spike` creates a unique disposable AppContainer
+profile with **zero capabilities**, constructs a process attribute list with
+PROC_THREAD_ATTRIBUTE_SECURITY_CAPABILITIES, and launches only the known Windows
+system `whoami.exe /user` utility **suspended**.
+
+Before allowing its primary thread to resume, the trusted Host checks
+TokenIsAppContainer=1, verifies the token AppContainer SID matches the newly
+created profile and asserts TokenCapabilities has zero entries. It also assigns
+the child to a kill-on-close Windows Job Object *before* resuming. Handles and
+profile are disposed on success or failure.
+
+This is proof of a low-privilege **test process**, not a complete arbitrary-code
+sandbox. **No renderer, model, user-controlled executable, workspace file, shell
+command or MCP process can call this launcher.** OS-level negative tests for
+filesystem writes, network access/egress, cross-user access, token escalation,
+inherited handles and symlink attacks remain a blocking security gate; an
+AppContainer identity alone is not sufficient evidence.
+
+Run in Windows CI:
+
+```powershell
+dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj -c Release --no-build -- --appcontainer-launch-spike
+```
+
+Technical reference: https://learn.microsoft.com/en-us/windows/win32/secauthz/implementing-an-appcontainer

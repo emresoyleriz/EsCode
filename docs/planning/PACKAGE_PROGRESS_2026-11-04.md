@@ -4,7 +4,7 @@
 
 | Requested package | Code delivery | Status of complete requested package | Explicit remaining work |
 |---|---|---|---|
-| G2.1 Windows Sandbox | [#95](https://github.com/emresoyleriz/EsCode/pull/95), [#104](https://github.com/emresoyleriz/EsCode/pull/104) + AppContainer profile smoke (PR pending) | **PARTIAL** | Real AppContainer-restricted worker, FS/network egress, cross-user hostile VM tests |
+| G2.1 Windows Sandbox | [#95](https://github.com/emresoyleriz/EsCode/pull/95), [#104](https://github.com/emresoyleriz/EsCode/pull/104), [#110](https://github.com/emresoyleriz/EsCode/pull/110), verified AppContainer launch (PR pending) | **PARTIAL** | Actual sandboxed EsCode worker plus hostile Windows VM filesystem/network/token/inherited-handle tests, safe tool broker integration |
 | G3 SQLite / Checkpoint / Recovery | [#96](https://github.com/emresoyleriz/EsCode/pull/96) + kill-point/backup hardening (PR pending) | **PARTIAL** | Global/workspace DB partition, migration rollback, power-loss/disk faults and trusted external effect verifier |
 | G4.1 Workspace real files | [#97](https://github.com/emresoyleriz/EsCode/pull/97) + multi-root read session slice (PR pending) | **PARTIAL** | Renderer bridge, dirty-buffer revision, source identity/TOCTOU, approved patch transactions |
 | G4.2 Git branch/worktree | [#98](https://github.com/emresoyleriz/EsCode/pull/98) + bounded Git status/output slice (PR pending) | **PARTIAL** | Hook/filter sandbox, UI grants, conflicts, commit/push/merge and revert |
