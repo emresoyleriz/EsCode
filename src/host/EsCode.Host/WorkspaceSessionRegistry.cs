@@ -37,6 +37,12 @@ internal sealed class WorkspaceSessionRegistry
     internal WorkspaceTextSnapshot Read(string sessionId, string relativePath) =>
         GetReader(sessionId).ReadText(relativePath);
 
+    // Only the trusted Host's approval coordinator calls this after consuming
+    // a scoped, single-use Tool Broker grant. Never bind it to generic IPC.
+    internal WorkspaceTextSnapshot ReplaceAfterTrustedApproval(string sessionId,
+        string relativePath, string expectedSha256, string text) =>
+        GetReader(sessionId).ReplaceText(relativePath, expectedSha256, text);
+
     internal IReadOnlyList<string> List(string sessionId, int maxEntries = 128) =>
         GetReader(sessionId).ListTextCandidates(maxEntries);
 
