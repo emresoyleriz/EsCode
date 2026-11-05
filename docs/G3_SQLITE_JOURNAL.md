@@ -20,3 +20,21 @@ dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj -c Release --no-bui
 ```
 
 **Still open for G3:** full global/workspace SQLite split, schema migration rollback strategy, durability kill-point matrix, UI journal/event replay, workspace snapshot integrity, actual file checkpoint contents, external side-effect reconciliation, backup/restore operator UI and secure credential storage. E04-S01/S02/S03 remain open until those requirements and real Windows crash tests are verified.
+
+## G3 crash-kill integration and backup hardening
+
+The Windows CI suite now launches a separate .NET Host process in **Prepared** and **Executing** states, waits until the journal's SQLite transaction is durably committed, forcibly kills that process, then reopens the same database in a new process. It verifies:
+
+- A killed Prepared operation remains Prepared, with zero recovery transitions.
+- A killed Executing operation becomes OutcomeUnknown **exactly once** after explicit recovery.
+- No operation is silently marked Succeeded, automatically retried or reconciled.
+- Reopening after recovery preserves the state and does not duplicate transitions.
+- Child processes run only a known safe Host test entrypoint and perform no external effects.
+
+SQLite consistent backups are now staged under a unique same-directory name, closed, then atomically published without overwriting an existing backup. A failed snapshot must not appear under the target backup name.
+
+```powershell
+dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj -c Release --no-build -- --journal-crash-spike
+```
+
+**Still not complete:** This test covers two deterministic kill points, not sudden power loss, disk full/corrupt DB, external effects, global/workspace DB separation or actual file checkpoint content. Note that the legacy ReconcileAbsentEffect API validates only digest syntax, NOT independent evidence of an absent external side effect; it must remain inaccessible to model/renderer and must be replaced with a trusted effect verifier before safe retry support is released.
