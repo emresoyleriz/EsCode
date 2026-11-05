@@ -3,6 +3,12 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 
+if (args.Contains("--plugin-manifest-spike", StringComparer.Ordinal))
+{
+    var passed = PluginManifestSpike.Run();
+    Console.WriteLine(passed ? "PLUGIN_MANIFEST_SPIKE_PASS" : "PLUGIN_MANIFEST_SPIKE_FAIL");
+    return passed ? 0 : 1;
+}
 if (args.Contains("--code-index-spike", StringComparer.Ordinal))
 {
     var passed = CodebaseIndexSpike.Run();
