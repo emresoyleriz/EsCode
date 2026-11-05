@@ -140,6 +140,12 @@ if (args.Contains("--journal-partitions-spike", StringComparer.Ordinal))
     Console.WriteLine(passed ? "JOURNAL_PARTITIONS_PASS" : "JOURNAL_PARTITIONS_FAIL");
     return passed ? 0 : 1;
 }
+if (args.Contains("--effect-observation-spike", StringComparer.Ordinal))
+{
+    var passed = TrustedEffectObservationSpike.Run();
+    Console.WriteLine(passed ? "TRUSTED_EFFECT_OBSERVATION_PASS" : "TRUSTED_EFFECT_OBSERVATION_FAIL");
+    return passed ? 0 : 1;
+}
 if (args.Contains("--journal-safety-spike", StringComparer.Ordinal))
 {
     var passed = JournalSafetySpike.Run();

@@ -69,6 +69,8 @@ jobs:
         run: dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj --configuration Release --no-build -- --journal-crash-spike
       - name: Verify denied digest-only reconciliation and future schema preservation
         run: dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj --configuration Release --no-build -- --journal-safety-spike
+      - name: Verify durable trusted file-effect observations without authorizing retries
+        run: dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj --configuration Release --no-build -- --effect-observation-spike
       - name: Verify separate global/workspace journals and transactional migration rollback
         run: dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj --configuration Release --no-build -- --journal-partitions-spike
       - name: Verify DPAPI encrypted unsaved-buffer recovery, migration and corruption refusal
