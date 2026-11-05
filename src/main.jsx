@@ -3,6 +3,7 @@ import {createRoot} from "react-dom/client";
 import {NAV} from "./state.js";
 import {openEditorTab,closeEditorTab} from "./editor-tabs.js";
 import {prepareInlineEdit,applyInlineEdit} from "./inline-edit.js";
+import {languageForFile} from "./language-for-file.js";
 import {t} from "./i18n.js";
 import {DEFAULT_SETTINGS,readSettings,saveSettings,resetSettings} from "./settings.js";
 import "./styles.css";
@@ -82,7 +83,15 @@ function App(){
      e.preventDefault();activatePaletteItem(menu[0].id);
    }
  };
- const closePalette=()=>{setPalette(false);requestAnimationFrame(()=>lastFocus.current?.focus?.());};
+ const closePalette=()=>{
+   setPalette(false);
+   requestAnimationFrame(()=>{
+     // Do not steal focus if the user has already navigated elsewhere.
+     const active=document.activeElement;
+     if(active===document.body||!active||active.closest?.(".palette"))
+       lastFocus.current?.focus?.();
+   });
+ };
  useEffect(()=>{saveSettings(prefs)},[prefs]);
  useEffect(()=>{document.documentElement.lang=prefs.locale==="TR"?"tr":"en";document.title="EsCode — "+dictionary(page)},[prefs.locale,page]);
  useEffect(()=>{const handle=e=>{
@@ -132,7 +141,7 @@ function App(){
     <aside className="filetree" aria-label={dictionary("fileTree")}><div className="section-label">{dictionary("fileTree")}</div><div className="tree-row open">⌄ &nbsp; ESCODE</div><div className="tree-row indent">⌄ &nbsp; src</div>{Object.keys(seed).map(name=><button key={name} className={`tree-row indent2 ${selectedFile===name?"selected":""}`} aria-current={selectedFile===name?"page":undefined} onClick={()=>onSelectFile(name)}>⌑ &nbsp; {name}{buffers[name]!==seed[name]?" •":""}</button>)}</aside>
     <div className="editor">
       <div className="tabs" role="tablist" aria-label={dictionary("codeTitle")}>{openTabs.map(name=><div className={`active-tab ${selectedFile===name?"":"inactive-tab"}`} key={name}><button type="button" className="editor-tab-select" role="tab" aria-selected={selectedFile===name} onClick={()=>onSelectFile(name)}><span className="dot-code">●</span>{name}{buffers[name]!==seed[name]?" •":""}</button>{openTabs.length>1&&<button type="button" className="editor-tab-close" aria-label={`Close ${name}`} onClick={()=>onCloseFile(name)}>×</button>}</div>)}</div>
-      <div className="editor-toolbar"><span>src / {selectedFile} {dirty&&tag(dictionary("dirty"),"warn")}</span><span>{selectedFile.endsWith(".json")?"JSON":"C#"} · UTF-8 <button type="button" className="secondary" onClick={beginInlineEdit}>{dictionary("inlineEdit")}</button></span></div>
+      <div className="editor-toolbar"><span>src / {selectedFile} {dirty&&tag(dictionary("dirty"),"warn")}</span><span>{languageForFile(selectedFile)} · UTF-8 <button type="button" className="secondary" onClick={beginInlineEdit}>{dictionary("inlineEdit")}</button></span></div>
       {inlineProposal&&<section className="inline-edit-panel" aria-label={dictionary("inlineEdit")}>
         <h3>{dictionary("inlineEdit")}</h3>
         <p>{dictionary("inlineDisclaimer")}</p>
@@ -142,7 +151,7 @@ function App(){
         <button type="button" className="primary" disabled={!inlineProposal.original&&!inlineReplacement} onClick={acceptInlineEdit}>{dictionary("inlineAccept")}</button></div>
       </section>}
       <div className="monaco-container" aria-label={dictionary("codeTitle")}><Suspense fallback={<div className="editor-loading">Monaco Editor…</div>}>
-        <Monaco key={selectedFile} onMount={editor=>{editorRef.current=editor;}} path={selectedFile} language={selectedFile.endsWith(".json")?"json":"csharp"} theme={prefs.theme==="dark"?"vs-dark":"light"} value={buffers[selectedFile]} options={{fontSize:13,minimap:{enabled:false},automaticLayout:true,scrollBeyondLastLine:false,wordWrap:"off",fontLigatures:true,readOnly:false,accessibilitySupport:"auto"}} onChange={v=>setBuffers(p=>({...p,[selectedFile]:v??""}))}/>
+        <Monaco key={selectedFile} onMount={editor=>{editorRef.current=editor;}} path={selectedFile} language={languageForFile(selectedFile)} theme={prefs.theme==="dark"?"vs-dark":"light"} value={buffers[selectedFile]} options={{fontSize:13,minimap:{enabled:false},automaticLayout:true,scrollBeyondLastLine:false,wordWrap:"off",fontLigatures:true,readOnly:false,accessibilitySupport:"auto"}} onChange={v=>setBuffers(p=>({...p,[selectedFile]:v??""}))}/>
       </Suspense></div>
       {prefs.terminalOpen&&<div className="terminal"><div className="terminal-head"><span>{dictionary("terminalTitle")}</span><button onClick={()=>change("terminalOpen",false)} aria-label={dictionary("close")}>×</button></div><div className="terminal-body"><span className="term-dim">PS C:\EsCode&gt;</span> dotnet test<br/><span className="term-dim">{dictionary("notConnected")} — {dictionary("mock")}</span><br/><span className="term-dim">PS C:\EsCode&gt; _</span></div></div>}
     </div></div>;

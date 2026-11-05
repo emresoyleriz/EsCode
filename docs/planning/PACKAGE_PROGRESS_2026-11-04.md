@@ -8,7 +8,7 @@
 | G3 SQLite / Checkpoint / Recovery | [#96](https://github.com/emresoyleriz/EsCode/pull/96) + kill-point/backup hardening (PR pending) | **PARTIAL** | Global/workspace DB partition, migration rollback, power-loss/disk faults and trusted external effect verifier |
 | G4.1 Workspace real files | [#97](https://github.com/emresoyleriz/EsCode/pull/97) + multi-root read session slice (PR pending) | **PARTIAL** | Renderer bridge, dirty-buffer revision, source identity/TOCTOU, approved patch transactions |
 | G4.2 Git branch/worktree | [#98](https://github.com/emresoyleriz/EsCode/pull/98) + bounded Git status/output slice (PR pending) | **PARTIAL** | Hook/filter sandbox, UI grants, conflicts, commit/push/merge and revert |
-| G4.3 Monaco / Terminal / Debugger | [#99](https://github.com/emresoyleriz/EsCode/pull/99) | **PARTIAL** | Real save, LSP/diagnostics, PTY, debugger and cancelable build/test |
+| G4.3 Monaco / Terminal / Debugger | [#99](https://github.com/emresoyleriz/EsCode/pull/99) + extension-aware Monaco language dispatch (PR pending) | **PARTIAL** | Real save, LSP/diagnostics, PTY, debugger and cancelable build/test |
 | G5 LLM API / Model Studio | [#100](https://github.com/emresoyleriz/EsCode/pull/100) + bounded SSE/timeout hardening (PR pending) | **PARTIAL** | Trusted streaming IPC, secure key vault, provider routes/probes, Model Studio UI |
 | G6.1 Agent Runtime | [#101](https://github.com/emresoyleriz/EsCode/pull/101) | **PARTIAL / PR REVIEW** | Real DAG, approval integration, tool loop, stop/resume, context and evidence |
 | G6.2 Autonomous code workflow | No delivery | **OPEN** | Controlled patch→build→test→review, bounded retries and security gates |
