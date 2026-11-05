@@ -105,6 +105,8 @@ jobs:
         run: dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj --configuration Release --no-build -- --appcontainer-profile-spike
       - name: Verify suspended zero-capability AppContainer child token, SID and Job Object
         run: dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj --configuration Release --no-build -- --appcontainer-launch-spike
+      - name: Verify AppContainer file, loopback and child-process denial with positive controls
+        run: dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj --configuration Release --no-build -- --appcontainer-adversarial-spike
       - name: Verify real Node to .NET Host IPC with negative scenarios
         run: node --test tests/windows/ipc-host.test.mjs
   dependency-audit:

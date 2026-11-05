@@ -18,11 +18,18 @@ internal static class AppContainerProcessSpike
     private const int TokenAppContainerSid = 31;
     private static readonly IntPtr SecurityCapabilitiesAttribute = (IntPtr)0x00020009;
 
-    internal static async Task<bool> RunAsync()
+    internal static Task<bool> RunAsync() => RunProbeAsync("whoami.exe", "/user");
+
+    // Fixture-specific Windows isolation probe; never exposed to renderer, tools or plugins.
+    internal static async Task<bool> RunProbeAsync(string utility, string arguments)
     {
         if (!OperatingSystem.IsWindows()) return false;
-        var executable = Path.Combine(Environment.SystemDirectory, "whoami.exe");
-        if (!File.Exists(executable)) throw new FileNotFoundException("Known safe Windows utility unavailable");
+        if (utility is not ("whoami.exe" or "cmd.exe" or "curl.exe") ||
+            string.IsNullOrWhiteSpace(arguments) || arguments.Length > 512 ||
+            arguments.Contains('\n') || arguments.Contains('\r'))
+            throw new ArgumentException("Unapproved sandbox test fixture");
+        var executable = Path.Combine(Environment.SystemDirectory, utility);
+        if (!File.Exists(executable)) throw new FileNotFoundException("Known Windows test utility unavailable");
         var name = "EsCode.LaunchProbe." + Guid.NewGuid().ToString("N");
         IntPtr sid = IntPtr.Zero;
         IntPtr attributes = IntPtr.Zero;
@@ -69,7 +76,7 @@ internal static class AppContainerProcessSpike
                 StartupInfo = new StartupInfo { cb = (uint)Marshal.SizeOf<StartupInfoEx>() },
                 AttributeList = attributes
             };
-            var argv = new StringBuilder("\"" + executable + "\" /user");
+            var argv = new StringBuilder("\"" + executable + "\" " + arguments);
             if (!CreateProcess(executable, argv, IntPtr.Zero, IntPtr.Zero, false,
                     CreateSuspended | CreateNoWindow | ExtendedStartupInfoPresent,
                     IntPtr.Zero, null, ref startup, out child))
