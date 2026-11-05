@@ -72,6 +72,12 @@ if (args.Contains("--git-worktree-spike", StringComparer.Ordinal))
     Console.WriteLine(passed ? "GIT_WORKTREE_SPIKE_PASS" : "GIT_WORKTREE_SPIKE_FAIL");
     return passed ? 0 : 1;
 }
+if (args.Contains("--workspace-sessions-spike", StringComparer.Ordinal))
+{
+    var passed = WorkspaceSessionsSpike.Run();
+    Console.WriteLine(passed ? "WORKSPACE_SESSIONS_PASS" : "WORKSPACE_SESSIONS_FAIL");
+    return passed ? 0 : 1;
+}
 if (args.Contains("--workspace-read-spike", StringComparer.Ordinal))
 {
     var passed = WorkspaceReadSpike.Run();

@@ -71,6 +71,8 @@ jobs:
         run: dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj --configuration Release --no-build -- --journal-safety-spike
       - name: Verify read-only workspace path and UTF-8 protections
         run: dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj --configuration Release --no-build -- --workspace-read-spike
+      - name: Verify multi-root workspace isolation and stale revision rejection
+        run: dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj --configuration Release --no-build -- --workspace-sessions-spike
       - name: Verify supervised Git worktree creation and grant denial
         run: dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj --configuration Release --no-build -- --git-worktree-spike
       - name: Verify streamed OpenAI-compatible provider chat and failures

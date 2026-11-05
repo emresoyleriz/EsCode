@@ -6,7 +6,7 @@
 |---|---|---|---|
 | G2.1 Windows Sandbox | [#95](https://github.com/emresoyleriz/EsCode/pull/95), [#104](https://github.com/emresoyleriz/EsCode/pull/104) + AppContainer profile smoke (PR pending) | **PARTIAL** | Real AppContainer-restricted worker, FS/network egress, cross-user hostile VM tests |
 | G3 SQLite / Checkpoint / Recovery | [#96](https://github.com/emresoyleriz/EsCode/pull/96) + kill-point/backup hardening (PR pending) | **PARTIAL** | Global/workspace DB partition, migration rollback, power-loss/disk faults and trusted external effect verifier |
-| G4.1 Workspace real files | [#97](https://github.com/emresoyleriz/EsCode/pull/97) | **PARTIAL** | Renderer bridge, multi-root, buffer revision, source identity/TOCTOU, approved patch transactions |
+| G4.1 Workspace real files | [#97](https://github.com/emresoyleriz/EsCode/pull/97) + multi-root read session slice (PR pending) | **PARTIAL** | Renderer bridge, dirty-buffer revision, source identity/TOCTOU, approved patch transactions |
 | G4.2 Git branch/worktree | [#98](https://github.com/emresoyleriz/EsCode/pull/98) | **PARTIAL** | Hook/filter sandbox, UI grants, dirty state, conflicts, commit/push/merge and revert |
 | G4.3 Monaco / Terminal / Debugger | [#99](https://github.com/emresoyleriz/EsCode/pull/99) | **PARTIAL** | Real save, LSP/diagnostics, PTY, debugger and cancelable build/test |
 | G5 LLM API / Model Studio | [#100](https://github.com/emresoyleriz/EsCode/pull/100) + bounded SSE/timeout hardening (PR pending) | **PARTIAL** | Trusted streaming IPC, secure key vault, provider routes/probes, Model Studio UI |

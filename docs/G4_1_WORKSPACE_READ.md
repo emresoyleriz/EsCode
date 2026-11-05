@@ -11,3 +11,15 @@ dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj -c Release -- --wor
 ```
 
 Keep E05-S01/S02/S03 open until true read/write, buffer revisions and atomic patch tests succeed.
+
+## G4.1 Multi-root session and conflict-detection slice
+
+The trusted .NET Host can register up to eight **separate, explicitly selected absolute directory roots** under opaque session IDs. Each session uses the existing WorkspaceReader path and reparse-point protections. File reads and candidate lists are scoped to the registered root.
+
+`IsCurrent(sessionId, relativePath, sha256)` re-opens and hashes the actual file at the time of validation, rather than trusting a possibly missed watcher event. The CLI smoke proves different roots with identical filenames do not leak or mix content, edits in another process invalidate only the affected revision, traversal and secret segments are denied, and closed roots stop accepting reads.
+
+```powershell
+dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj -c Release --no-build -- --workspace-sessions-spike
+```
+
+**Security status:** Host-only read access. There is no renderer-controlled root registration, filesystem write grant, approved patch UI, atomic Windows handle identity proof, multi-root watcher or secure agent patch execution. G2.1 remains a prerequisite before letting untrusted code use file tools.
