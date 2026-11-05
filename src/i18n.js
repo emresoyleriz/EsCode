@@ -1,6 +1,6 @@
 export const dict={
 tr:{
-welcome:"Hoş Geldiniz",ide:"Çalışma Alanı",agents:"Agent Studio",tasks:"Görev Merkezi",review:"Git ve İnceleme",intelligence:"Kod Zekâsı",approvals:"Onay Merkezi",models:"Model Studio",mcp:"MCP Yöneticisi",terminal:"Terminal ve Hata Ayıklama",browser:"Tarayıcı Otomasyonu",settings:"Ayarlar ve Temalar",recovery:"Kurtarma ve İzleme",
+navigation:"Ana gezinti",welcome:"Hoş Geldiniz",ide:"Çalışma Alanı",agents:"Agent Studio",tasks:"Görev Merkezi",review:"Git ve İnceleme",intelligence:"Kod Zekâsı",approvals:"Onay Merkezi",models:"Model Studio",mcp:"MCP Yöneticisi",terminal:"Terminal ve Hata Ayıklama",browser:"Tarayıcı Otomasyonu",settings:"Ayarlar ve Temalar",recovery:"Kurtarma ve İzleme",
 tagline:"Yazılım geliştirme için tasarlanmış akıllı çalışma alanı.",command:"Komut veya ekran ara...",newTask:"Yeni görev",prototype:"Arayüz prototipi",offline:"Sunucu bağlı değil",search:"Komut paleti",close:"Kapat",toggleAgent:"Agent panelini aç/kapat",toggleTerminal:"Terminali aç/kapat",
 agentTitle:"AI Asistan",agentWelcome:"Güvenle geliştirin.",agentDescription:"Çoklu agent planlama, kontrollü kod değişikliği ve bağımsız inceleme.",agentAsk:"Asistanına sor...",send:"Gönder",agentOffline:"Backend bağlantısı yok. İstek gönderilmedi.",
 welcomeTitle:"Projelerine kaldığın yerden devam et",openWorkspace:"Örnek çalışma alanını aç",recent:"Son projeler",restore:"Oturumu kurtar",restoreHelp:"Kesintiye uğrayan görevler ve kaydedilmemiş dosyalar doğrulanarak geri alınır.",
@@ -18,7 +18,7 @@ featureTitle:"Özellik önizlemesi",notConnected:"Bu özellik henüz gerçek ser
 logout:"Oturum kapalı",kbdHelp:"Esc kapatır · Enter seçer",pinned:"Sabitlendi"
 },
 en:{
-welcome:"Welcome Hub",ide:"Workspace",agents:"Agent Studio",tasks:"Task Center",review:"Git & Review",intelligence:"Code Intelligence",approvals:"Approval Center",models:"Model Studio",mcp:"MCP Manager",terminal:"Terminal & Debugger",browser:"Browser Automation",settings:"Settings & Themes",recovery:"Recovery & Insights",
+navigation:"Main navigation",welcome:"Welcome Hub",ide:"Workspace",agents:"Agent Studio",tasks:"Task Center",review:"Git & Review",intelligence:"Code Intelligence",approvals:"Approval Center",models:"Model Studio",mcp:"MCP Manager",terminal:"Terminal & Debugger",browser:"Browser Automation",settings:"Settings & Themes",recovery:"Recovery & Insights",
 tagline:"An intelligent workspace designed for focused development.",command:"Search commands and screens...",newTask:"New task",prototype:"UI prototype",offline:"Backend not connected",search:"Command palette",close:"Close",toggleAgent:"Toggle agent panel",toggleTerminal:"Toggle terminal",
 agentTitle:"AI Assistant",agentWelcome:"Build with confidence.",agentDescription:"Multi-agent planning, safe code edits and independent review.",agentAsk:"Ask your assistant...",send:"Send",agentOffline:"Backend unavailable. No request was sent.",
 welcomeTitle:"Pick up where you left off",openWorkspace:"Open sample workspace",recent:"Recent projects",restore:"Restore session",restoreHelp:"Interrupted tasks and unsaved buffers require verified recovery.",

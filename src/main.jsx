@@ -63,6 +63,25 @@ function App(){
  const change=(field,value)=>setPrefs(prev=>({...prev,[field]:value}));
  const navigate=(id)=>{if(NAV.some(n=>n.id===id)){setPage(id);setPalette(false);setQuery("");}};
  const openPalette=()=>{lastFocus.current=document.activeElement;setQuery("");setPalette(true);};
+ const activatePaletteItem=(id)=>{navigate(id);requestAnimationFrame(()=>lastFocus.current?.focus?.());};
+ const handlePaletteKey=(e)=>{
+   if(e.key==="Escape"){e.preventDefault();e.stopPropagation();closePalette();return;}
+   const controls=[...e.currentTarget.querySelectorAll("input,button")].filter(x=>!x.disabled);
+   const index=controls.indexOf(document.activeElement);
+   if(e.key==="ArrowDown"||e.key==="ArrowUp"){
+     e.preventDefault();
+     const delta=e.key==="ArrowDown"?1:-1;
+     const next=index<0?0:(index+delta+controls.length)%controls.length;
+     controls[next]?.focus();
+   }
+   if(e.key==="Tab"&&controls.length){
+     if(e.shiftKey&&index===0){e.preventDefault();controls[controls.length-1].focus();}
+     else if(!e.shiftKey&&index===controls.length-1){e.preventDefault();controls[0].focus();}
+   }
+   if(e.key==="Enter"&&e.target.id==="palette-search"&&menu.length){
+     e.preventDefault();activatePaletteItem(menu[0].id);
+   }
+ };
  const closePalette=()=>{setPalette(false);requestAnimationFrame(()=>lastFocus.current?.focus?.());};
  useEffect(()=>{saveSettings(prefs)},[prefs]);
  useEffect(()=>{document.documentElement.lang=prefs.locale==="TR"?"tr":"en";document.title="EsCode — "+dictionary(page)},[prefs.locale,page]);
@@ -160,7 +179,7 @@ function App(){
  </aside>;
  return <div className={`shell theme-${prefs.theme} density-${prefs.density.toLowerCase()} ${prefs.motion?"reduce-motion":""}`}>
   <aside className="sidebar"><div className="brand"><div className="logo">✧</div><div><strong>EsCode</strong><small>DEVELOPMENT STUDIO</small></div></div>
-  <div className="side-nav">{NAV.map(n=><button key={n.id} className={`nav-item ${page===n.id?"active":""}`} data-page={n.id} title={dictionary(n.id)} aria-label={dictionary(n.id)} onClick={()=>navigate(n.id)}><span className="nav-icon">{n.icon}</span><span className="nav-label">{dictionary(n.id)}</span></button>)}</div>
+  <nav className="side-nav" aria-label={dictionary("navigation")}>{NAV.map(n=><button key={n.id} className={`nav-item ${page===n.id?"active":""}`} data-page={n.id} title={dictionary(n.id)} aria-label={dictionary(n.id)} aria-current={page===n.id?"page":undefined} onClick={()=>navigate(n.id)}><span className="nav-icon">{n.icon}</span><span className="nav-label">{dictionary(n.id)}</span></button>)}</nav>
   <div className="sidebar-bottom"><span className="avatar">ES</span><div><b>EsCode</b><small>{dictionary("prototype")}</small></div></div></aside>
   <div className="main"><header className="topbar"><div className="breadcrumbs"><span>EsCode</span><span className="separator">/</span><strong>{dictionary(page)}</strong></div>
    <div className="top-actions"><button className="cmd-trigger" aria-label={dictionary("openPalette")} onClick={openPalette}>{dictionary("command")} <kbd>Ctrl K</kbd></button>{dot}<button className="icon-btn" aria-label={dictionary("toggleAgent")} onClick={()=>change("agentMode",prefs.agentMode==="hidden"?"docked":"hidden")}>✧</button><button className="icon-btn" onClick={()=>navigate("settings")} aria-label={dictionary("settings")}>⚙</button></div></header>
@@ -172,9 +191,9 @@ function App(){
    <footer className="statusbar"><span className="green">●</span> {dictionary("prototype")} <span>Windows 11 x64 / {hostCaps.mode}</span><span className="right">{hostCaps.hostConnected?(prefs.locale==="TR"?"Host bağlı (salt okunur)":"Host connected (read-only)"):dictionary("offline")} · {prefs.locale}</span></footer>
   </div>
   {palette&&<div className="overlay" onMouseDown={e=>{if(e.target===e.currentTarget)closePalette()}}>
-   <div className="palette" role="dialog" aria-modal="true" aria-label={dictionary("search")}>
-   <input id="palette-search" autoFocus placeholder={dictionary("command")} value={query} onChange={e=>setQuery(e.target.value)} onKeyDown={e=>{if(e.key==="Enter"&&menu.length)navigate(menu[0].id);if(e.key==="Tab"){e.preventDefault();e.currentTarget.focus();}}}/>
-   <div id="palette-options">{menu.map(n=><button key={n.id} data-page={n.id} onClick={()=>{navigate(n.id);requestAnimationFrame(()=>lastFocus.current?.focus?.())}}>{n.icon} &nbsp; {dictionary(n.id)}</button>)}</div>
+   <div className="palette" role="dialog" aria-modal="true" aria-label={dictionary("search")} onKeyDown={handlePaletteKey}>
+   <input id="palette-search" autoFocus type="search" aria-label={dictionary("search")} aria-controls="palette-options" placeholder={dictionary("command")} value={query} onChange={e=>setQuery(e.target.value)}/>
+   <div id="palette-options">{menu.map(n=><button key={n.id} data-page={n.id} onClick={()=>activatePaletteItem(n.id)}>{n.icon} &nbsp; {dictionary(n.id)}</button>)}</div>
    <small>{dictionary("kbdHelp")}</small></div></div>}
   {notice&&<div className="toast" role="status">{notice}<button onClick={()=>setNotice("")} aria-label={dictionary("close")}>×</button></div>}
  </div>;
