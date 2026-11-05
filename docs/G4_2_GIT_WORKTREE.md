@@ -7,3 +7,14 @@ This package provides a trusted-Host-only Git worktree creation primitive. It in
 ```powershell
 dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj -c Release -- --git-worktree-spike
 ```
+
+## G4.2 trusted Git process-output hardening and tracked status
+
+- Git subprocess output is now bounded **while reading**, with a 128 KiB stdout and 32 KiB stderr cap. Overflow or timeout fails closed, terminates the process tree and never returns partial success or raw errors.
+- Git system/global config is disabled for the trusted Git fixture; an arbitrary hostile repo's local config, hooks and filters remain untrusted. The agent Git execution path is NOT enabled.
+- The trusted Host can obtain porcelain status of tracked files only, with core.fsmonitor disabled. The Windows fixture modifies a worktree file and verifies a tracked status indicator.
+- Negative tests cover bounded and oversized output; UI IPC, commit, push and merge require separate scope grants and sandbox verification.
+
+```powershell
+dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj -c Release --no-build -- --git-output-guard-spike
+```

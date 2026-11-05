@@ -66,6 +66,12 @@ if (args.Contains("--worker-containment-spike", StringComparer.Ordinal))
     Console.WriteLine(passed ? "WORKER_CONTAINMENT_SPIKE_PASS" : "WORKER_CONTAINMENT_SPIKE_FAIL");
     return passed ? 0 : 1;
 }
+if (args.Contains("--git-output-guard-spike", StringComparer.Ordinal))
+{
+    var passed = await GitOutputGuardSpike.RunAsync();
+    Console.WriteLine(passed ? "GIT_OUTPUT_GUARD_PASS" : "GIT_OUTPUT_GUARD_FAIL");
+    return passed ? 0 : 1;
+}
 if (args.Contains("--git-worktree-spike", StringComparer.Ordinal))
 {
     var passed = await GitWorktreeSpike.RunAsync();
