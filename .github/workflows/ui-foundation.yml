@@ -69,6 +69,8 @@ jobs:
         run: dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj --configuration Release --no-build -- --journal-crash-spike
       - name: Verify denied digest-only reconciliation and future schema preservation
         run: dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj --configuration Release --no-build -- --journal-safety-spike
+      - name: Verify separate global/workspace journals and transactional migration rollback
+        run: dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj --configuration Release --no-build -- --journal-partitions-spike
       - name: Verify read-only workspace path and UTF-8 protections
         run: dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj --configuration Release --no-build -- --workspace-read-spike
       - name: Verify multi-root workspace isolation and stale revision rejection

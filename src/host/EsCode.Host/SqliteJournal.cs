@@ -42,6 +42,7 @@ internal sealed class SqliteJournal : IDisposable
         }
         catch
         {
+            _db?.Dispose();
             _ownerLock.Dispose();
             throw;
         }
@@ -51,7 +52,11 @@ internal sealed class SqliteJournal : IDisposable
     {
         var current = Convert.ToInt32(Scalar("PRAGMA user_version;"), CultureInfo.InvariantCulture);
         if (current > Version || current < 0) throw new InvalidOperationException("Unsupported journal schema");
-        if (current == Version) return;
+        if (current == Version)
+        {
+            ValidateSchema();
+            return;
+        }
         using var tx = _db.BeginTransaction();
         using var command = _db.CreateCommand();
         command.Transaction = tx;
@@ -77,10 +82,37 @@ internal sealed class SqliteJournal : IDisposable
               git_ref TEXT NOT NULL, manifest_sha256 TEXT NOT NULL,
               created_utc TEXT NOT NULL
             );
-            PRAGMA user_version=1;
             """;
         command.ExecuteNonQuery();
+        ValidateSchema(tx);
+        using var versionCommand = _db.CreateCommand();
+        versionCommand.Transaction = tx;
+        versionCommand.CommandText = "PRAGMA user_version=1;";
+        versionCommand.ExecuteNonQuery();
         tx.Commit();
+    }
+
+    // Prevent an existing partial/tampered database from being mistaken for an
+    // upgraded schema. A failed first migration rolls back the DDL and version.
+    private void ValidateSchema(SqliteTransaction? transaction = null)
+    {
+        var required = new Dictionary<string, string[]>(StringComparer.Ordinal)
+        {
+            ["operations"] = ["id","kind","state","args_sha256","idempotent","evidence_effect_absent","updated_utc"],
+            ["events"] = ["sequence","operation_id","state","updated_utc"],
+            ["checkpoints"] = ["id","workspace_id","git_ref","manifest_sha256","created_utc"]
+        };
+        foreach (var entry in required)
+        {
+            using var cmd = _db.CreateCommand();
+            cmd.Transaction = transaction;
+            cmd.CommandText = $"PRAGMA table_info(\"{entry.Key}\");";
+            var seen = new HashSet<string>(StringComparer.Ordinal);
+            using (var reader = cmd.ExecuteReader())
+                while (reader.Read()) seen.Add(reader.GetString(1));
+            if (!entry.Value.All(seen.Contains))
+                throw new InvalidDataException("Incomplete journal schema");
+        }
     }
 
     internal void Prepare(string id, string kind, string argsDigest, bool idempotent)
