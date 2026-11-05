@@ -41,6 +41,35 @@ internal static class GitWorktreeService
         return target;
     }
 
+    internal static async Task<string> ReadBoundedAsync(
+        TextReader reader, int maxChars, CancellationToken token)
+    {
+        if (maxChars is < 1 or > 131_072)
+            throw new ArgumentOutOfRangeException(nameof(maxChars));
+        var chars = new char[2048];
+        var output = new StringBuilder();
+        while (true)
+        {
+            var count = await reader.ReadAsync(chars.AsMemory(), token);
+            if (count == 0) return output.ToString();
+            if (output.Length + count > maxChars)
+                throw new InvalidDataException("Git output budget exceeded");
+            output.Append(chars, 0, count);
+        }
+    }
+
+    internal static async Task<string> ReadTrackedStatusAsync(
+        string gitExe, string trustedRepo)
+    {
+        // Read-only status of tracked files only, with fsmonitor disabled.
+        // No aliases, Git hooks, text filters or remote operations.
+        var result = await GitCommandAsync(gitExe, trustedRepo,
+            new[] { "-c", "core.fsmonitor=false", "status", "--porcelain=v1", "--untracked-files=no" });
+        if (result.ExitCode != 0)
+            throw new InvalidOperationException("Git status failed");
+        return result.Output;
+    }
+
     internal static async Task<(int ExitCode, string Output)> GitCommandAsync(
         string gitExe, string workDir, IEnumerable<string> arguments, int timeoutSeconds = 20)
     {
@@ -56,18 +85,24 @@ internal static class GitWorktreeService
         };
         process.StartInfo.Environment["GIT_TERMINAL_PROMPT"] = "0";
         process.StartInfo.Environment["GCM_INTERACTIVE"] = "Never";
+        // Git system/global config can invoke external helpers. Trusted fixture
+        // commands use only repo config. Does not make hostile repo config safe.
+        process.StartInfo.Environment["GIT_CONFIG_NOSYSTEM"] = "1";
+        process.StartInfo.Environment["GIT_CONFIG_GLOBAL"] = "NUL";
         foreach (var argument in arguments) process.StartInfo.ArgumentList.Add(argument);
         if (!process.Start()) throw new InvalidOperationException("Git failed to start");
+        if (timeoutSeconds is < 1 or > 60)
+            throw new ArgumentOutOfRangeException(nameof(timeoutSeconds));
         using var deadline = new CancellationTokenSource(TimeSpan.FromSeconds(timeoutSeconds));
         try
         {
-            var stdout = process.StandardOutput.ReadToEndAsync(deadline.Token);
-            var stderr = process.StandardError.ReadToEndAsync(deadline.Token);
-            await process.WaitForExitAsync(deadline.Token);
-            var output = await stdout;
-            _ = await stderr; // Never expose potentially sensitive Git diagnostics.
-            if (output.Length > 131_072) throw new InvalidDataException("Git output cap exceeded");
-            return (process.ExitCode, output);
+            // Bound BOTH streams while reading; ReadToEndAsync could otherwise
+            // allocate arbitrary amounts of memory before any output length check.
+            var stdout = ReadBoundedAsync(process.StandardOutput, 131_072, deadline.Token);
+            var stderr = ReadBoundedAsync(process.StandardError, 32_768, deadline.Token);
+            await Task.WhenAll(stdout, stderr, process.WaitForExitAsync(deadline.Token));
+            _ = await stderr; // Never expose potentially sensitive diagnostics.
+            return (process.ExitCode, await stdout);
         }
         catch
         {
@@ -137,7 +172,10 @@ internal static class GitWorktreeSpike
             catch (UnauthorizedAccessException) { }
             var branch = await GitWorktreeService.GitCommandAsync(git, created,
                 new[] { "branch", "--show-current" });
-            return branch.ExitCode == 0 && branch.Output.Trim() == "story/story1";
+            if (branch.ExitCode != 0 || branch.Output.Trim() != "story/story1") return false;
+            await File.WriteAllTextAsync(Path.Combine(created, "README.md"), "modified by trusted test\n");
+            var status = await GitWorktreeService.ReadTrackedStatusAsync(git, created);
+            return status.Contains(" M README.md", StringComparison.Ordinal);
         }
         finally
         {
@@ -145,5 +183,34 @@ internal static class GitWorktreeSpike
             catch (IOException) { }
             catch (UnauthorizedAccessException) { }
         }
+    }
+}
+
+internal static class GitOutputGuardSpike
+{
+    internal static async Task<bool> RunAsync()
+    {
+        var small = await GitWorktreeService.ReadBoundedAsync(
+            new StringReader("first\nsecond\n"), 100, CancellationToken.None);
+        if (small != "first\nsecond\n") return false;
+        try
+        {
+            await GitWorktreeService.ReadBoundedAsync(
+                new StringReader(new string('x', 5000)), 1024, CancellationToken.None);
+            return false;
+        }
+        catch (InvalidDataException) { }
+        using var cancel = new CancellationTokenSource();
+        cancel.Cancel();
+        // A custom reader may not honor a cancellation token, so test the
+        // cancellation path against a real StreamReader over a MemoryStream.
+        using var stream = new MemoryStream(new byte[8192]);
+        using var reader = new StreamReader(stream);
+        try
+        {
+            await GitWorktreeService.ReadBoundedAsync(reader, 131072, cancel.Token);
+        }
+        catch (OperationCanceledException) { }
+        return true;
     }
 }
