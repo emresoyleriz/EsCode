@@ -128,6 +128,12 @@ if (args.Contains("--workspace-read-spike", StringComparer.Ordinal))
     Console.WriteLine(passed ? "WORKSPACE_READ_SPIKE_PASS" : "WORKSPACE_READ_SPIKE_FAIL");
     return passed ? 0 : 1;
 }
+if (args.Contains("--session-checkpoint-spike", StringComparer.Ordinal))
+{
+    var passed = SessionCheckpointSpike.Run();
+    Console.WriteLine(passed ? "SESSION_CHECKPOINT_PASS" : "SESSION_CHECKPOINT_FAIL");
+    return passed ? 0 : 1;
+}
 if (args.Contains("--journal-partitions-spike", StringComparer.Ordinal))
 {
     var passed = JournalPartitionSpike.Run();
