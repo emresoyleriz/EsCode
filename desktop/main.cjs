@@ -2,7 +2,7 @@ const {app,BrowserWindow,ipcMain,net,protocol,session}=require("electron");
 const path=require("node:path");
 const fs=require("node:fs");
 const {pathToFileURL}=require("node:url");
-const {startManagedHost}=require("./host-bridge.cjs");
+const {startManagedHost,validateModelProbeInput}=require("./host-bridge.cjs");
 
 const ROOT=path.resolve(__dirname,"../dist");
 protocol.registerSchemesAsPrivileged([{scheme:"escode",privileges:{standard:true,secure:true,supportFetchAPI:true,stream:true}}]);
@@ -54,6 +54,19 @@ app.whenReady().then(()=>{
    }catch{/* Host unavailable; never trust unauthenticated responses. */}
    return Object.freeze({mode:process.platform==="win32"?"host-unavailable":"electron-preview",
      protocolVersion:1,safeRenderer:true,hostConnected:false});
+ });
+ // Typed, local-loopback-only GET /v1/models probe via authenticated .NET Host.
+ // No generic network proxy, prompt, API key, inference or tool execution.
+ ipcMain.handle("escode:model-probe",async (event,args)=>{
+   if(!allowedSender(event))throw new Error("Unauthorized sender");
+   if(!args||typeof args!=="object"||Array.isArray(args)||
+      Object.keys(args).sort().join(",")!=="baseUrl,model"||
+      !validateModelProbeInput(args.baseUrl,args.model))
+      throw new Error("Invalid local model probe input");
+   try{
+     return await managedHost?.probeModel(args.baseUrl,args.model) ??
+       Object.freeze({found:false,status:"provider-unavailable"});
+   }catch{return Object.freeze({found:false,status:"provider-unavailable"});}
  });
  createWindow();
  app.on("activate",()=>{if(BrowserWindow.getAllWindows().length===0)createWindow()});

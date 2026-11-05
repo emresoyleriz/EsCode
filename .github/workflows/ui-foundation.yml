@@ -79,6 +79,8 @@ jobs:
         run: dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj --configuration Release --no-build -- --git-output-guard-spike
       - name: Verify streamed OpenAI-compatible provider chat and failures
         run: dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj --configuration Release --no-build -- --chat-spike
+      - name: Verify authenticated read-only model catalog and bounded provider replies
+        run: dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj --configuration Release --no-build -- --model-catalog-spike
       - name: Verify plan-only durable agent run and failure transitions
         run: dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj --configuration Release --no-build -- --agent-plan-spike
       - name: Verify independent untrusted-plan reviewer cannot approve tools

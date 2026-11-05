@@ -68,11 +68,13 @@ internal static class PipeHost
                 PipeTransmissionMode.Byte, PipeOptions.Asynchronous | PipeOptions.CurrentUserOnly);
             await server.WaitForConnectionAsync(shutdown);
             using var requestTimeout = CancellationTokenSource.CreateLinkedTokenSource(shutdown);
-            requestTimeout.CancelAfter(TimeSpan.FromSeconds(3));
+            requestTimeout.CancelAfter(TimeSpan.FromSeconds(8));
             try
             {
                 var request = await ReadLineAsync(server, MaximumFrame, requestTimeout.Token);
-                var requestId = AuthenticateRequest(request, secret);
+                var capabilityId = AuthenticateRequest(request, secret);
+                var modelRequest = capabilityId is null ? AuthenticateModelProbe(request, secret) : null;
+                var requestId = capabilityId ?? modelRequest?.RequestId;
                 if (requestId is null || !seen.Add(requestId))
                 {
                     await WriteLineAsync(server, "DENIED", requestTimeout.Token);
@@ -80,6 +82,33 @@ internal static class PipeHost
                 }
                 seenOrder.Enqueue(requestId);
                 if (seenOrder.Count > 256) seen.Remove(seenOrder.Dequeue());
+                if (modelRequest is not null)
+                {
+                    ModelCatalogResult catalog;
+                    try
+                    {
+                        catalog = await ModelCatalogProbe.ProbeAsync(
+                            modelRequest.BaseUrl, modelRequest.Model, requestTimeout.Token);
+                    }
+                    catch (Exception ex) when (ex is HttpRequestException or IOException or
+                        TaskCanceledException or OperationCanceledException or ArgumentException)
+                    {
+                        catalog = new ModelCatalogResult(false, "provider-unavailable");
+                    }
+                    var modelResponse = new
+                    {
+                        protocolVersion = Version,
+                        requestId,
+                        type = "model-probe",
+                        found = catalog.Found,
+                        status = catalog.Status,
+                        auth = Sign(secret, $"response|{Version}|{requestId}|model-probe|" +
+                            $"{(catalog.Found ? "true" : "false")}|{catalog.Status}")
+                    };
+                    await WriteLineAsync(server, JsonSerializer.Serialize(modelResponse, WireJson),
+                        requestTimeout.Token);
+                    continue;
+                }
                 var response = new
                 {
                     protocolVersion = Version,
@@ -97,6 +126,32 @@ internal static class PipeHost
                 // Invalid and stalled clients fail closed; keep the service available.
             }
         }
+    }
+
+    private sealed record ModelProbeRequest(string RequestId, string BaseUrl, string Model);
+
+    private static ModelProbeRequest? AuthenticateModelProbe(string frame, byte[] secret)
+    {
+        using var doc = JsonDocument.Parse(frame, new JsonDocumentOptions { MaxDepth = 4 });
+        var root = doc.RootElement;
+        if (root.ValueKind != JsonValueKind.Object || root.EnumerateObject().Count() != 6 ||
+            !ReadInt(root, "protocolVersion", out var version) || version != Version ||
+            !ReadString(root, "requestId", out var id) ||
+            !Regex.IsMatch(id, "^[a-f0-9]{32}$", RegexOptions.CultureInvariant) ||
+            !ReadString(root, "type", out var type) || type != "model-probe" ||
+            !ReadString(root, "baseUrl", out var baseUrl) ||
+            !ReadString(root, "model", out var model) ||
+            !ModelCatalogProbe.IsSafeRequest(baseUrl, model) ||
+            !ReadString(root, "auth", out var auth) ||
+            !Regex.IsMatch(auth, "^[a-f0-9]{64}$", RegexOptions.CultureInvariant)) return null;
+        foreach (var prop in root.EnumerateObject())
+            if (prop.Name is not ("protocolVersion" or "requestId" or "type" or
+                "baseUrl" or "model" or "auth")) return null;
+        var expected = Convert.FromHexString(Sign(secret,
+            $"request|{Version}|{id}|model-probe|{baseUrl}|{model}"));
+        var actual = Convert.FromHexString(auth);
+        return CryptographicOperations.FixedTimeEquals(expected, actual)
+            ? new ModelProbeRequest(id, baseUrl, model) : null;
     }
 
     private static string? AuthenticateRequest(string frame, byte[] secret)

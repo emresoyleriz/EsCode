@@ -3,5 +3,6 @@ const {contextBridge,ipcRenderer}=require("electron");
 // Do NOT add generic invoke, shell or file APIs without a security ADR.
 contextBridge.exposeInMainWorld("escode",Object.freeze({
   version:1,
-  capabilities:()=>ipcRenderer.invoke("escode:capabilities")
+  capabilities:()=>ipcRenderer.invoke("escode:capabilities"),
+  probeModel:(baseUrl,model)=>ipcRenderer.invoke("escode:model-probe",{baseUrl,model})
 }));

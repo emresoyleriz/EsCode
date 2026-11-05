@@ -56,6 +56,9 @@ function App(){
  const [role,setRole]=useState("Supervised");
  const [prompt,setPrompt]=useState("");
  const [hostCaps,setHostCaps]=useState({mode:"browser-preview",hostConnected:false});
+ const [modelBaseUrl,setModelBaseUrl]=useState("http://127.0.0.1:8000/v1");
+ const [modelName,setModelName]=useState("qwen2.5-coder-7b");
+ const [modelProbeStatus,setModelProbeStatus]=useState("not-run");
  const lastFocus=useRef(null);
  const [floatPosition,setFloatPosition]=useState(null);
  const dragging=useRef(null);
@@ -86,7 +89,6 @@ function App(){
  const closePalette=()=>{
    setPalette(false);
    requestAnimationFrame(()=>{
-     // Do not steal focus if the user has already navigated elsewhere.
      const active=document.activeElement;
      if(active===document.body||!active||active.closest?.(".palette"))
        lastFocus.current?.focus?.();
@@ -132,6 +134,13 @@ function App(){
  const endDrag=()=>{if(dragging.current&&floatPosition){setPrefs(p=>({...p,agentX:floatPosition.x,agentY:floatPosition.y}));}dragging.current=null;};
  const dot=<span className="round-led" aria-label={dictionary("offline")}/>;
  const preview=()=>setNotice(dictionary("mock"));
+ const checkLocalModel=async()=>{
+   setModelProbeStatus("checking");
+   try{
+     const probe=await window.escode?.probeModel?.(modelBaseUrl,modelName);
+     setModelProbeStatus(probe?.status??"provider-unavailable");
+   }catch{setModelProbeStatus("provider-unavailable");}
+ };
  const tile=(title,subtitle,children)=><section className="tile"><div className="tile-heading"><div><h3>{title}</h3><p>{subtitle}</p></div><span aria-hidden="true" className="more">···</span></div>{children}</section>;
  const tag=(label,kind="")=><span className={`pill ${kind}`}>{label}</span>;
  const empty=(icon,title,details)=><div className="empty-state"><div className="empty-symbol" aria-hidden="true">{icon}</div><h2>{title}</h2><p>{details}</p></div>;
@@ -165,7 +174,16 @@ function App(){
    <div className="field-row"><label htmlFor="agentMode">{dictionary("panelMode")}</label><select id="agentMode" value={prefs.agentMode} onChange={e=>change("agentMode",e.target.value)}><option value="docked">{dictionary("docked")}</option><option value="floating">{dictionary("floating")}</option><option value="hidden">{dictionary("hidden")}</option></select></div>
    <label className="toggle"><input type="checkbox" checked={prefs.motion} onChange={e=>change("motion",e.target.checked)}/>{dictionary("motion")}</label>
   </>)}{tile(dictionary("settings"),dictionary("layoutPersisted"),<><p>{dictionary("layoutPersisted")}</p><button className="secondary" onClick={()=>{setPrefs(resetSettings());setFloatPosition(null)}}>{dictionary("layoutReset")}</button></>)}</div>;
-  if(page==="models")return <div className="cards-grid two">{tile(dictionary("modelTitle"),dictionary("noConnection"),<div className="agent-row">{dictionary("localModel")}{tag(dictionary("notConfigured"))}</div>)}{tile(dictionary("modelTitle"),dictionary("notVerified"),[dictionary("toolCalling"),dictionary("structured"),dictionary("context")].map(x=><div className="agent-row" key={x}>{x}{tag(dictionary("notVerified"),"warn")}</div>))}</div>;
+  if(page==="models")return <div className="cards-grid two">
+   {tile(dictionary("modelTitle"),dictionary("modelProbeHelp"),<>
+     <div className="field-row"><label htmlFor="model-base-url">{dictionary("modelEndpoint")}</label><input id="model-base-url" value={modelBaseUrl} maxLength={128} onChange={e=>{setModelBaseUrl(e.target.value);setModelProbeStatus("not-run");}}/></div>
+     <div className="field-row"><label htmlFor="model-id">{dictionary("modelIdentifier")}</label><input id="model-id" value={modelName} maxLength={128} onChange={e=>{setModelName(e.target.value);setModelProbeStatus("not-run");}}/></div>
+     <button className="primary" type="button" onClick={checkLocalModel} disabled={modelProbeStatus==="checking"}>{dictionary("modelCheck")}</button>
+     <p role="status" aria-live="polite">{dictionary("modelProbe_"+modelProbeStatus.replaceAll("-","_"))}</p>
+   </>)}
+   {tile(dictionary("modelTitle"),dictionary("modelProbeLimitations"),
+    [dictionary("toolCalling"),dictionary("structured"),dictionary("context")].map(x=><div className="agent-row" key={x}>{x}{tag(dictionary("notVerified"),"warn")}</div>))}
+ </div>;
   if(page==="approvals")return <div className="cards-grid two">{tile(dictionary("approvals"),dictionary("scope"),empty("⬡",dictionary("approvalTitle"),dictionary("approvalHelp")))}{tile(dictionary("role"),dictionary("prototype"),["Read-only","Ask","Supervised"].map(x=><div className="agent-row" key={x}>{x}{tag("MVP")}</div>))}</div>;
   if(page==="review")return <div className="cards-grid two">{tile(dictionary("review"),dictionary("noConnection"),empty("⑂",dictionary("noData"),dictionary("gitHelp")))}{tile(dictionary("review"),dictionary("prototype"),miniNotice(dictionary("role"),dictionary("gitHelp")))}</div>;
   if(page==="recovery")return <div className="cards-grid two">{tile(dictionary("recovery"),dictionary("noConnection"),empty("▥",dictionary("recoveryTitle"),dictionary("recoveryHelp")))}{tile(dictionary("unknown"),dictionary("noConnection"),miniNotice(dictionary("unknown"),dictionary("retryWarning")))}</div>;
