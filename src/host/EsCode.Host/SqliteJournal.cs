@@ -146,23 +146,21 @@ internal sealed class SqliteJournal : IDisposable
         }
     }
 
+    // Security-critical: a caller-provided hash is NOT evidence that an external
+    // side effect was absent. Until a trusted verifier observes the actual external
+    // system, reconciliation and retry must be impossible.
     internal bool ReconcileAbsentEffect(string id, string verificationDigest)
     {
         CheckId(id);
-        if (!Sha.IsMatch(verificationDigest)) return false;
-        lock (_gate)
-        {
-            var op = Read(id);
-            if (op?.State != JournalState.OutcomeUnknown || !op.Idempotent) return false;
-            Transition(id, JournalState.OutcomeUnknown, JournalState.Reconciled, proofAbsent: true);
-            return true;
-        }
+        return false;
     }
 
+    // Existing databases may contain "Reconciled" rows from older prototypes,
+    // but those states are NOT proof of an absent effect. Fail closed globally.
     internal bool CanRetry(string id)
     {
-        var op = Read(id);
-        return op is { State: JournalState.Reconciled, Idempotent: true, EvidenceEffectAbsent: true };
+        CheckId(id);
+        return false;
     }
 
     internal JournalOperation? Read(string id)

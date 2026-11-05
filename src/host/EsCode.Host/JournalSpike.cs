@@ -30,8 +30,9 @@ internal static class JournalSpike
                 if (store.CanRetry("task1") || store.CanRetry("task2")) return false;
                 if (store.ReconcileAbsentEffect("task1", "bad")) return false;
                 if (store.ReconcileAbsentEffect("task2", Digest)) return false;
-                if (!store.ReconcileAbsentEffect("task1", Digest)) return false;
-                if (!store.CanRetry("task1") || store.CanRetry("task2")) return false;
+                if (store.ReconcileAbsentEffect("task1", Digest)) return false;
+                if (store.CanRetry("task1") || store.CanRetry("task2")) return false;
+                if (store.Read("task1")?.State != JournalState.OutcomeUnknown) return false;
                 if (store.CheckpointCount() != 1) return false;
                 store.Backup(Path.Combine(dir, "backup.sqlite3"));
                 try { store.Backup(Path.Combine(dir, "backup.sqlite3")); return false; }
@@ -40,7 +41,7 @@ internal static class JournalSpike
             using (var restored = new SqliteJournal(Path.Combine(dir, "backup.sqlite3")))
             {
                 if (restored.CheckpointCount() != 1) return false;
-                if (restored.Read("task1")?.State != JournalState.Reconciled) return false;
+                if (restored.Read("task1")?.State != JournalState.OutcomeUnknown || restored.CanRetry("task1")) return false;
             }
             return true;
         }

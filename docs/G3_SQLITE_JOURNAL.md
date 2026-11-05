@@ -38,3 +38,11 @@ dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj -c Release --no-bui
 ```
 
 **Still not complete:** This test covers two deterministic kill points, not sudden power loss, disk full/corrupt DB, external effects, global/workspace DB separation or actual file checkpoint content. Note that the legacy ReconcileAbsentEffect API validates only digest syntax, NOT independent evidence of an absent external side effect; it must remain inaccessible to model/renderer and must be replaced with a trusted effect verifier before safe retry support is released.
+
+## G3 fail-closed reconciliation hardening
+
+Previously `ReconcileAbsentEffect(id, verificationDigest)` treated **any syntactically valid SHA-256 value** supplied by the caller as proof that an external side effect was absent, making an OutcomeUnknown operation retryable. This was unsafe.
+
+The method now always denies reconciliation and `CanRetry` always returns false, including for legacy journal rows marked Reconciled. No provider request, Git operation, file write or external action will be automatically replayed based on unverifiable evidence. This intentionally disables automated retry until a trusted **external system-of-record verifier** and a provenance-bearing evidence contract exist.
+
+Windows CI `--journal-safety-spike` proves a valid hash cannot authorize retry and confirms that attempting to open an unsupported future SQLite schema cannot downgrade the database version. This is not a replacement for full crash/power-failure validation.

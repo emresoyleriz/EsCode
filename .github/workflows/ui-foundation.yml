@@ -67,6 +67,8 @@ jobs:
         run: dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj --configuration Release --no-build -- --journal-spike
       - name: Verify real crash kill-point SQLite journal recovery
         run: dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj --configuration Release --no-build -- --journal-crash-spike
+      - name: Verify denied digest-only reconciliation and future schema preservation
+        run: dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj --configuration Release --no-build -- --journal-safety-spike
       - name: Verify read-only workspace path and UTF-8 protections
         run: dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj --configuration Release --no-build -- --workspace-read-spike
       - name: Verify supervised Git worktree creation and grant denial
