@@ -75,6 +75,8 @@ jobs:
         run: dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj --configuration Release --no-build -- --workspace-read-spike
       - name: Verify multi-root workspace isolation and stale revision rejection
         run: dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj --configuration Release --no-build -- --workspace-sessions-spike
+      - name: Verify actual disk patch with exact-content, single-use trusted approval
+        run: dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj --configuration Release --no-build -- --workspace-approved-patch-spike
       - name: Verify supervised Git worktree creation and grant denial
         run: dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj --configuration Release --no-build -- --git-worktree-spike
       - name: Verify bounded Git stdout/stderr and negative-output fixtures

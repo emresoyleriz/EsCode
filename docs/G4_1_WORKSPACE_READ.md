@@ -23,3 +23,30 @@ dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj -c Release --no-bui
 ```
 
 **Security status:** Host-only read access. There is no renderer-controlled root registration, filesystem write grant, approved patch UI, atomic Windows handle identity proof, multi-root watcher or secure agent patch execution. G2.1 remains a prerequisite before letting untrusted code use file tools.
+
+## G4.1 — Trusted approved disk patch with content binding
+
+`ApprovedWorkspacePatch` binds every proposed edit to an immutable SHA-256
+digest of the **session ID, relative file path, expected source file revision
+and full replacement text**. Only the trusted Host's supervised
+`ToolPolicyBroker` can mint a matching single-use, short-lived grant after
+human approval. On apply, the grant must match exactly; it is consumed even
+if a filesystem error or revision conflict follows. No automatic replay.
+
+The Windows smoke uses real disk files in two isolated roots and proves:
+no grant ⇒ no write; content/actor tampering ⇒ denied and grant consumed;
+valid grant ⇒ one real file replacement; replay ⇒ denied; external edit
+after approval ⇒ stale-revision rejection; another root unchanged; and
+ReadOnly mode ⇒ no write grants.
+
+```powershell
+dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj -c Release --no-build -- --workspace-approved-patch-spike
+```
+
+**Important limits:** There is no renderer-accessible or agent-accessible
+save endpoint. There is also still a short TOCTOU window between
+`WorkspaceReader`'s final revision check and Windows rename; a trusted
+kernel handle/identity gate and adversarial symlink race tests are required
+before allowing untrusted tools or UI workflows to replace arbitrary files.
+This module validates a safe-by-default approval protocol, not a complete
+file-save feature.
