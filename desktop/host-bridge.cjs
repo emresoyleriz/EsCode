@@ -27,6 +27,24 @@ function authenticatedResponse(message,secret,requestId){
   const actual=Buffer.from(message.auth,'hex');
   return actual.length===expected.length&&timingSafeEqual(expected,actual);
 }
+function validateModelProbeInput(baseUrl,model){
+  if(typeof baseUrl!=='string'||baseUrl.length>128||baseUrl.length===0||
+    /[%\\|\r\n]/.test(baseUrl)||typeof model!=='string'||
+    !/^[A-Za-z0-9][A-Za-z0-9_./:-]{0,127}$/.test(model))return false;
+  try{
+    const uri=new URL(baseUrl);
+    return uri.protocol==='http:'&&['127.0.0.1','[::1]'].includes(uri.hostname)&&
+      !uri.username&&!uri.password&&!uri.search&&!uri.hash&&
+      (uri.pathname==='/v1'||uri.pathname==='/v1/')&&uri.port!=='';
+  }catch{return false;}
+}
+function modelSign(secret,kind,requestId,baseUrl,model,found,status){
+  const message=kind==='request'
+    ? 'request|'+VERSION+'|'+requestId+'|model-probe|'+baseUrl+'|'+model
+    : 'response|'+VERSION+'|'+requestId+'|model-probe|'+(found?'true':'false')+'|'+status;
+  return createHmac('sha256',secret).update(message,'utf8').digest('hex');
+}
+
 function createBridge({name,secret,connect=net.createConnection,timeoutMs=1500}){
   if(!Buffer.isBuffer(secret)||secret.length!==32)throw new Error('Invalid session secret');
   const endpoint=pipePath(name);
@@ -63,6 +81,54 @@ function createBridge({name,secret,connect=net.createConnection,timeoutMs=1500})
           }catch{finish(new Error('Host response authentication failed'));}
         });
       });
+    },
+    async probeModel(baseUrl,model,requestId=randomBytes(16).toString('hex')){
+      if(!validateModelProbeInput(baseUrl,model)||
+         typeof requestId!=='string'||!/^[a-f0-9]{32}$/.test(requestId))
+        throw new Error('Invalid local model probe');
+      const req={protocolVersion:VERSION,requestId,type:'model-probe',baseUrl,model,
+        auth:modelSign(secret,'request',requestId,baseUrl,model)};
+      return await new Promise((resolve,reject)=>{
+        let socket,settled=false,raw=Buffer.alloc(0);
+        const finish=(error,result)=>{
+          if(settled)return;
+          settled=true;
+          socket?.destroy();
+          if(error)reject(error);else resolve(result);
+        };
+        try{socket=connect(endpoint);}
+        catch{finish(new Error('Model Host unavailable'));return;}
+        socket.setTimeout(9000,()=>finish(new Error('Model probe timeout')));
+        socket.on('error',()=>finish(new Error('Model Host unavailable')));
+        socket.on('end',()=>finish(new Error('Model Host disconnected')));
+        socket.on('connect',()=>socket.write(JSON.stringify(req)+'\n'));
+        socket.on('data',data=>{
+          if(settled)return;
+          raw=Buffer.concat([raw,data]);
+          if(raw.length>FRAME_LIMIT)return finish(new Error('Model Host frame too large'));
+          const newline=raw.indexOf(10);
+          if(newline<0)return;
+          if(newline!==raw.length-1)return finish(new Error('Multiple Model Host frames'));
+          try{
+            const result=JSON.parse(raw.subarray(0,newline).toString('utf8'));
+            const allowed=['model-found','model-not-listed','authorization-required','provider-unavailable'];
+            if(!result||typeof result!=='object'||Array.isArray(result)||
+               Object.keys(result).sort().join(',')!=='auth,found,protocolVersion,requestId,status,type'||
+               result.protocolVersion!==VERSION||result.requestId!==requestId||
+               result.type!=='model-probe'||typeof result.found!=='boolean'||
+               !allowed.includes(result.status)||typeof result.auth!=='string'||
+               !/^[a-f0-9]{64}$/.test(result.auth)||
+               (result.found!==(result.status==='model-found')))
+              throw new Error('Untrusted model response');
+            const expected=Buffer.from(modelSign(secret,'response',requestId,null,null,
+              result.found,result.status),'hex');
+            const actual=Buffer.from(result.auth,'hex');
+            if(actual.length!==expected.length||!timingSafeEqual(actual,expected))
+              throw new Error('Invalid model response auth');
+            finish(null,Object.freeze({found:result.found,status:result.status}));
+          }catch{finish(new Error('Model response authentication failed'));}
+        });
+      });
     }
   });
 }
@@ -93,6 +159,11 @@ function startManagedHost({projectRoot=path.resolve(__dirname,'..'),dotnet='dotn
       }
       return null;
     },
+    async probeModel(baseUrl,model){
+      if(stopped||!alive)return Object.freeze({found:false,status:'provider-unavailable'});
+      try{return await bridge.probeModel(baseUrl,model);}
+      catch{return Object.freeze({found:false,status:'provider-unavailable'});}
+    },
     stop(){
       stopped=true;
       secret.fill(0);
@@ -100,4 +171,4 @@ function startManagedHost({projectRoot=path.resolve(__dirname,'..'),dotnet='dotn
     }
   });
 }
-module.exports={createBridge,startManagedHost,pipePath,sign,authenticatedResponse};
+module.exports={createBridge,startManagedHost,pipePath,sign,authenticatedResponse,modelSign,validateModelProbeInput};

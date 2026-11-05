@@ -6,6 +6,7 @@ import {dirname,resolve,join} from 'node:path';
 import {randomBytes} from 'node:crypto';
 import {spawn} from 'node:child_process';
 import net from 'node:net';
+import http from 'node:http';
 const require=createRequire(import.meta.url);
 const {startManagedHost,pipePath,sign,createBridge}=require('../../desktop/host-bridge.cjs');
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'../..');
@@ -68,4 +69,28 @@ test('real Windows Host rejects wrong auth, replay, tool command and oversize',
       assert.equal(oversizedReply,'');
       assert.equal((await createBridge({name,secret}).capabilities()).hostConnected,true);
     }finally{child.kill();}
+  });
+
+test('real Windows Host validates read-only local model discovery through typed IPC',
+  {skip:process.platform!=='win32',timeout:35000},async()=>{
+    const server=http.createServer((req,res)=>{
+      assert.equal(req.method,'GET');
+      assert.equal(req.url,'/v1/models');
+      res.writeHead(200,{'content-type':'application/json'});
+      res.end(JSON.stringify({data:[{id:'qwen2.5-coder-7b'}]}));
+    });
+    await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
+    const address=server.address();
+    const host=startManagedHost({projectRoot:root});
+    try{
+      assert.equal((await host.capabilities()).hostConnected,true);
+      const response=await host.probeModel(
+        'http://127.0.0.1:'+address.port+'/v1','qwen2.5-coder-7b');
+      assert.deepEqual(response,{found:true,status:'model-found'});
+      const missing=await host.probeModel(
+        'http://127.0.0.1:'+address.port+'/v1','different');
+      assert.deepEqual(missing,{found:false,status:'model-not-listed'});
+      const invalid=await host.probeModel('http://example.com/v1','qwen2.5-coder-7b');
+      assert.deepEqual(invalid,{found:false,status:'provider-unavailable'});
+    }finally{host.stop();await new Promise(resolve=>server.close(resolve));}
   });
