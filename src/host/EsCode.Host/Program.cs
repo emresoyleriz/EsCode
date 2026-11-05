@@ -48,6 +48,12 @@ if (args.Contains("--worker-containment-child", StringComparer.Ordinal))
     await Task.Delay(TimeSpan.FromSeconds(30));
     return 0;
 }
+if (args.Contains("--appcontainer-profile-spike", StringComparer.Ordinal))
+{
+    var passed = AppContainerProfileProbe.Run();
+    Console.WriteLine(passed ? "APPCONTAINER_PROFILE_PASS" : "APPCONTAINER_PROFILE_FAIL");
+    return passed ? 0 : 1;
+}
 if (args.Contains("--suspended-worker-spike", StringComparer.Ordinal))
 {
     var passed = await SuspendedWorkerProbe.RunAsync();
