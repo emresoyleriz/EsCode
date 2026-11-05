@@ -20,7 +20,7 @@ internal static class SessionCheckpointSpike
         {
             using (var journal = new SqliteJournal(db))
             {
-                if (ReadVersion(db) != 2) return false;
+                if (ReadVersion(db) != 3) return false;
                 journal.Prepare("remote1", "external-call", Digest, idempotent: true);
                 journal.MarkExecuting("remote1");
                 var buffers = new Dictionary<string, string>(StringComparer.Ordinal)
@@ -159,7 +159,7 @@ internal static class SessionCheckpointSpike
             }
             using (var migrated = new SqliteJournal(legacy))
             {
-                if (ReadVersion(legacy) != 2) return false;
+                if (ReadVersion(legacy) != 3) return false;
                 migrated.StoreSessionCheckpoint("legacycp", "project1", "story1",
                     "AwaitingApproval", new Dictionary<string, string>
                     { ["README.md"] = "draft" }, Array.Empty<string>());

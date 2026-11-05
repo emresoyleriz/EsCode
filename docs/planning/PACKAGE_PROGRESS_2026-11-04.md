@@ -5,7 +5,7 @@
 | Requested package | Code delivery | Status of complete requested package | Explicit remaining work |
 |---|---|---|---|
 | G2.1 Windows Sandbox | [#95](https://github.com/emresoyleriz/EsCode/pull/95), [#104](https://github.com/emresoyleriz/EsCode/pull/104), [#110](https://github.com/emresoyleriz/EsCode/pull/110), verified AppContainer launch (PR pending) | **PARTIAL** | Actual sandboxed EsCode worker plus hostile Windows VM filesystem/network/token/inherited-handle tests, safe tool broker integration |
-| G3 SQLite / Checkpoint / Recovery | #96, #105, #111, #117 plus DPAPI session checkpoint (PR pending) | **PARTIAL** | UI buffer integration, power-loss/disk-full injection, cross-machine keys and trusted external effect verifier |
+| G3 SQLite / Checkpoint / Recovery | #96, #105, #111, #117, #122, #123 plus file-effect observation (PR pending) | **PARTIAL** | Live UI checkpoint integration, real volume/power faults, cross-machine backup keys and authoritative external-effect proof |
 | G4.1 Workspace real files | [#97](https://github.com/emresoyleriz/EsCode/pull/97), [#112](https://github.com/emresoyleriz/EsCode/pull/112), trusted one-time approved disk patch (PR pending) | **PARTIAL** | Secure renderer bridge, reliable watcher, buffer recovery and Windows TOCTOU handle identity |
 | G4.2 Git branch/worktree | [#98](https://github.com/emresoyleriz/EsCode/pull/98) + bounded Git status/output slice (PR pending) | **PARTIAL** | Hook/filter sandbox, UI grants, conflicts, commit/push/merge and revert |
 | G4.3 Monaco / Terminal / Debugger | [#99](https://github.com/emresoyleriz/EsCode/pull/99) + extension-aware Monaco language dispatch (PR pending) | **PARTIAL** | Real save, LSP/diagnostics, PTY, debugger and cancelable build/test |
