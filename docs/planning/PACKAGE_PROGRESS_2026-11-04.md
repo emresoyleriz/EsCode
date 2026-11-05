@@ -14,7 +14,7 @@
 | G6.2 Autonomous code workflow | No delivery | **OPEN** | Controlled patch→build→test→review, bounded retries and security gates |
 | G7.1 Codebase Intelligence | Read-only [G7.1 FTS slice](../G7_1_CODEBASE_INDEX.md) (PR pending) | **PARTIAL** | Watcher, symbol graph, multi-root and context budgeting still open |
 | G7.2 Cursor-like advanced coding | Local [Inline Edit slice](../G7_2_INLINE_EDIT.md) (PR pending) | **PARTIAL** | AI edit, LSP, completion, refactor, diagnostics, real save |
-| G8.1 Multi-Agent / Independent Review | No delivery | **OPEN** | Isolated worktrees, reviewer evidence, conflict coordination |
+| G8.1 Multi-Agent / Independent Review | Plan critique-only slice (PR pending) | **PARTIAL** | Code diff review, isolated worktrees, reviewer evidence, conflict coordination |
 | G8.2 MCP / Plugin / Browser | No delivery | **OPEN** | Trust manifests, sandboxed MCP and browser session isolation |
 | G9.1 Premium UX / 13 screens | Existing UI prototype only | **OPEN** | Full functional UX, TR/EN, docking, accessibility and multi-monitor verification |
 | G9.2 Windows Installer / Updates | No delivery | **OPEN** | Signed install, portable packaging, auto-update, rollback, backup |

@@ -11,6 +11,14 @@ if (args.Contains("--code-index-spike", StringComparer.Ordinal))
 }
 if (args.Contains("--code-index", StringComparer.Ordinal))
     return CodebaseIndexCommand.Run(args);
+if (args.Contains("--plan-review-spike", StringComparer.Ordinal))
+{
+    var passed = await PlanReviewSpike.RunAsync();
+    Console.WriteLine(passed ? "PLAN_REVIEW_SPIKE_PASS" : "PLAN_REVIEW_SPIKE_FAIL");
+    return passed ? 0 : 1;
+}
+if (args.Contains("--plan-review", StringComparer.Ordinal))
+    return await PlanReviewCommand.RunAsync(args);
 if (args.Contains("--agent-plan-spike", StringComparer.Ordinal))
 {
     var passed = await AgentPlanSpike.RunAsync();
