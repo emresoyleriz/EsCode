@@ -25,3 +25,29 @@ dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj -c Release -- --cod
 ```
 
 **Remaining G7.1 acceptance:** production workspace identity and multi-root; watcher-driven refresh; freshness and stale-index performance benchmarks; FTS relevance/ranking and symbol graph; content safety classification before model context; context budget and search UI; larger repository pagination; Windows adversarial filesystem tests. No agent reads this index automatically. Security gate G2.1 remains OPEN.
+
+## G7.1 persisted lexical symbols and bounded context
+
+`CodeSymbolIndex` builds a **separate read-only source-code symbol database**
+for declared workspace directories, supporting common C# class/record/etc.,
+TypeScript/JavaScript function/type/class, Python def/class, and SQL
+CREATE PROCEDURE/FUNCTION/VIEW declarations. This is lexical extraction, **not
+a compiler, semantic symbol graph or LSP**.
+
+The index excludes secret-like filenames, symlinks and blocked directories via
+the trusted WorkspaceReader, and caps work to 511 files, 128 KiB/file,
+8 MiB cumulative content and 64 symbols/file. SQLite updates are
+transactional and incremental. Results are checked against live SHA-256 file
+digests before display, preventing stale source from being returned after an
+external edit. A context preview extracts bounded nearby lines marked
+`UntrustedSource=true`; no context is automatically sent to an LLM.
+
+```powershell
+dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj -c Release --no-build -- --symbol-index-spike
+dotnet run --project src/host/EsCode.Host/EsCode.Host.csproj -c Release -- --symbol-index --workspace C:\Dev\Repo --database C:\Users\me\AppData\Local\EsCode\symbols.sqlite3 --symbol CustomerLedger
+```
+
+**Remaining G7.1:** real language servers/symbol graph and cross-file references,
+workspace watcher invalidation, ranking benchmarks, multi-root identity,
+conservative data loss prevention/classification, UI search navigation and
+actual context token counting.
