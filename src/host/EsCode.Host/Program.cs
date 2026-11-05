@@ -34,6 +34,12 @@ if (args.Contains("--worker-containment-child", StringComparer.Ordinal))
     await Task.Delay(TimeSpan.FromSeconds(30));
     return 0;
 }
+if (args.Contains("--suspended-worker-spike", StringComparer.Ordinal))
+{
+    var passed = await SuspendedWorkerProbe.RunAsync();
+    Console.WriteLine(passed ? "SUSPENDED_WORKER_SPIKE_PASS" : "SUSPENDED_WORKER_SPIKE_FAIL");
+    return passed ? 0 : 1;
+}
 if (args.Contains("--worker-containment-spike", StringComparer.Ordinal))
 {
     var passed = await WorkerContainmentSpike.RunAsync();
