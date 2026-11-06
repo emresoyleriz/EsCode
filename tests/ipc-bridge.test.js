@@ -77,3 +77,32 @@ test('invalid request IDs, pipe names and secrets rejected',async()=>{
   assert.throws(()=>createBridge({name:'escode-'+'a'.repeat(32),secret:Buffer.alloc(4)}),/session secret/);
   await assert.rejects(createBridge({name:'escode-'+'b'.repeat(32),secret:randomBytes(32)}).capabilities('bad'),/request ID/);
 });
+
+test('host IPC rejects a valid MAC bound to a different response mode',async()=>{
+ const secret=randomBytes(32);
+ await withPipeServer((socket,req)=>{
+   socket.end(JSON.stringify({...healthy(secret,req.requestId),mode:'host-executable'})+'\n');
+ },async name=>await assert.rejects(createBridge({name,secret}).capabilities(),/authentication failed/));
+});
+test('host IPC rejects extra response frames even when first frame is authenticated',async()=>{
+ const secret=randomBytes(32);
+ await withPipeServer((socket,req)=>{
+   socket.end(JSON.stringify(healthy(secret,req.requestId))+'\n'+JSON.stringify(healthy(secret,req.requestId))+'\n');
+ },async name=>await assert.rejects(createBridge({name,secret}).capabilities(),/multiple frames/));
+});
+test('host IPC rejects malformed JSON and unknown fields without returning capabilities',async()=>{
+ const secret=randomBytes(32);
+ for(const response of ['not-json\n',JSON.stringify({protocolVersion:1})+'\n']){
+   await withPipeServer(socket=>socket.end(response),async name=>
+     await assert.rejects(createBridge({name,secret}).capabilities(),/authentication failed/));
+ }
+});
+test('host IPC accepts a fragmented single authenticated frame',async()=>{
+ const secret=randomBytes(32);
+ await withPipeServer((socket,req)=>{
+   const wire=JSON.stringify(healthy(secret,req.requestId))+'\n';
+   const half=Math.floor(wire.length/2);
+   socket.write(wire.slice(0,half));
+   socket.end(wire.slice(half));
+ },async name=>assert.equal((await createBridge({name,secret}).capabilities()).hostConnected,true));
+});
