@@ -1,0 +1,91 @@
+# Open issue inventory — 7 November 2026
+
+Source: authenticated GitHub search `repo:emresoyleriz/EsCode is:issue is:open`, maximum 100. Returned 86 records. Open issue status does not mean no implementation exists; inspect code and evidence before selecting each slice.
+
+- [ ] [#125](https://github.com/emresoyleriz/EsCode/issues/125) [LOCAL-PC BEKLİYOR / FINAL GATE] T01–T06 Windows sandbox, crash recovery and hostile-environment acceptance
+- [ ] [#87](https://github.com/emresoyleriz/EsCode/issues/87) [AUDIT-DOCS] Synchronize full V18 package and correct stale project status
+- [ ] [#86](https://github.com/emresoyleriz/EsCode/issues/86) [AUDIT-QUALITY] Pin dependencies and protect main with required CI
+- [ ] [#85](https://github.com/emresoyleriz/EsCode/issues/85) [AUDIT-UI] Implement actual docking, pin precedence and accessible command palette
+- [ ] [#84](https://github.com/emresoyleriz/EsCode/issues/84) [AUDIT-UI] Implement real TR/EN localization and persisted UI preferences
+- [ ] [#83](https://github.com/emresoyleriz/EsCode/issues/83) [AUDIT-P0] Replace vanilla DOM prototype with Electron + React + Monaco vertical slice
+- [ ] [#81](https://github.com/emresoyleriz/EsCode/issues/81) [UI-GATE] Premium UX acceptance gate — all 13 screens and MVP journey
+- [ ] [#80](https://github.com/emresoyleriz/EsCode/issues/80) [UI-GAP-07] Design assets, typography licensing and brand usage
+- [ ] [#79](https://github.com/emresoyleriz/EsCode/issues/79) [UI-GAP-06] Premium visual QA and accessibility evidence
+- [ ] [#78](https://github.com/emresoyleriz/EsCode/issues/78) [UI-GAP-05] Complete component inventory and interaction states
+- [ ] [#77](https://github.com/emresoyleriz/EsCode/issues/77) [UI-GAP-04] Responsive docking/floating and layout recovery matrix
+- [ ] [#76](https://github.com/emresoyleriz/EsCode/issues/76) [UI-GAP-03] Agent-first user journeys and trust UX
+- [ ] [#75](https://github.com/emresoyleriz/EsCode/issues/75) [UI-GAP-02] Interaction matrix, keyboard and focus behavior
+- [ ] [#74](https://github.com/emresoyleriz/EsCode/issues/74) [UI-GAP-01] Screen-by-screen high-fidelity design references
+- [ ] [#73](https://github.com/emresoyleriz/EsCode/issues/73) [E18-S03] Release go/no-go
+- [ ] [#72](https://github.com/emresoyleriz/EsCode/issues/72) [E18-S02] Agent quality evaluation
+- [ ] [#71](https://github.com/emresoyleriz/EsCode/issues/71) [E18-S01] Security and chaos certification
+- [ ] [#70](https://github.com/emresoyleriz/EsCode/issues/70) [E17-S03] Backup and disaster recovery
+- [ ] [#69](https://github.com/emresoyleriz/EsCode/issues/69) [E17-S02] Updates and rollback
+- [ ] [#68](https://github.com/emresoyleriz/EsCode/issues/68) [E17-S01] Installer and portable build
+- [ ] [#67](https://github.com/emresoyleriz/EsCode/issues/67) [E16-S03] Performance and multi-monitor
+- [ ] [#66](https://github.com/emresoyleriz/EsCode/issues/66) [E16-S02] Accessibility and i18n
+- [ ] [#65](https://github.com/emresoyleriz/EsCode/issues/65) [E16-S01] Visual regression and component contracts
+- [ ] [#64](https://github.com/emresoyleriz/EsCode/issues/64) [E15-S03] Local diagnostics
+- [ ] [#63](https://github.com/emresoyleriz/EsCode/issues/63) [E15-S02] Resource budgets
+- [ ] [#62](https://github.com/emresoyleriz/EsCode/issues/62) [E15-S01] Agent activity and timeline
+- [ ] [#61](https://github.com/emresoyleriz/EsCode/issues/61) [E14-S03] Browser automation
+- [ ] [#60](https://github.com/emresoyleriz/EsCode/issues/60) [E14-S02] MCP broker and prompt injection
+- [ ] [#59](https://github.com/emresoyleriz/EsCode/issues/59) [E14-S01] Trust manifest and certification
+- [ ] [#58](https://github.com/emresoyleriz/EsCode/issues/58) [E13-S03] Independent review and audit
+- [ ] [#57](https://github.com/emresoyleriz/EsCode/issues/57) [E13-S02] Merge coordinator
+- [ ] [#56](https://github.com/emresoyleriz/EsCode/issues/56) [E13-S01] Parallel isolated worktrees
+- [ ] [#55](https://github.com/emresoyleriz/EsCode/issues/55) [E12-S03] Context retrieval and benchmarks
+- [ ] [#54](https://github.com/emresoyleriz/EsCode/issues/54) [E12-S02] Language adapters
+- [ ] [#53](https://github.com/emresoyleriz/EsCode/issues/53) [E12-S01] Incremental lexical index
+- [ ] [#52](https://github.com/emresoyleriz/EsCode/issues/52) [E11-S03] Delivery and recovery E2E
+- [ ] [#51](https://github.com/emresoyleriz/EsCode/issues/51) [E11-S02] Edit-test-review vertical slice
+- [ ] [#50](https://github.com/emresoyleriz/EsCode/issues/50) [E11-S01] Story intake to plan
+- [ ] [#49](https://github.com/emresoyleriz/EsCode/issues/49) [E10-S03] Agent execution and verification
+- [ ] [#48](https://github.com/emresoyleriz/EsCode/issues/48) [E10-S02] Plan and approval
+- [ ] [#47](https://github.com/emresoyleriz/EsCode/issues/47) [E10-S01] Durable task DAG
+- [ ] [#46](https://github.com/emresoyleriz/EsCode/issues/46) [E09-S03] Model Studio UI
+- [ ] [#45](https://github.com/emresoyleriz/EsCode/issues/45) [E09-S02] Capability probe and routing
+- [ ] [#44](https://github.com/emresoyleriz/EsCode/issues/44) [E09-S01] Provider adapters
+- [ ] [#43](https://github.com/emresoyleriz/EsCode/issues/43) [E08-S03] Diff/review UI
+- [ ] [#42](https://github.com/emresoyleriz/EsCode/issues/42) [E08-S02] Terminal and test runner
+- [ ] [#41](https://github.com/emresoyleriz/EsCode/issues/41) [E08-S01] Monaco integration
+- [ ] [#40](https://github.com/emresoyleriz/EsCode/issues/40) [E07-S03] Theme and design components
+- [ ] [#38](https://github.com/emresoyleriz/EsCode/issues/38) [E07-S02] Docking/floating layout
+- [ ] [#37](https://github.com/emresoyleriz/EsCode/issues/37) [E07-S01] Welcome and Project Hub
+- [ ] [#36](https://github.com/emresoyleriz/EsCode/issues/36) [E06-S03] Diff and review
+- [ ] [#35](https://github.com/emresoyleriz/EsCode/issues/35) [E06-S02] Git permission policy
+- [ ] [#34](https://github.com/emresoyleriz/EsCode/issues/34) [E06-S01] Story branch workflow
+- [ ] [#33](https://github.com/emresoyleriz/EsCode/issues/33) [E05-S03] Safe patch application
+- [ ] [#32](https://github.com/emresoyleriz/EsCode/issues/32) [E05-S02] Unsaved buffer snapshots
+- [ ] [#31](https://github.com/emresoyleriz/EsCode/issues/31) [E05-S01] Multi-root project manager
+- [ ] [#30](https://github.com/emresoyleriz/EsCode/issues/30) [E04-S03] Crash recovery & reconciliation
+- [ ] [#29](https://github.com/emresoyleriz/EsCode/issues/29) [E04-S02] Operation journal and checkpoint
+- [ ] [#28](https://github.com/emresoyleriz/EsCode/issues/28) [E04-S01] Global/workspace SQLite
+- [ ] [#27](https://github.com/emresoyleriz/EsCode/issues/27) [E03-S03] Worker lifecycle
+- [ ] [#26](https://github.com/emresoyleriz/EsCode/issues/26) [E03-S02] Tool broker authorization
+- [ ] [#25](https://github.com/emresoyleriz/EsCode/issues/25) [E03-S01] Risk-tier isolation spike
+- [ ] [#24](https://github.com/emresoyleriz/EsCode/issues/24) [E02-S03] Reconnect and failure handling
+- [ ] [#23](https://github.com/emresoyleriz/EsCode/issues/23) [E02-S02] Protocol and event stream
+- [ ] [#22](https://github.com/emresoyleriz/EsCode/issues/22) [E02-S01] Authenticated Named Pipe transport
+- [ ] [#21](https://github.com/emresoyleriz/EsCode/issues/21) [E01-S03] Architecture enforcement
+- [ ] [#20](https://github.com/emresoyleriz/EsCode/issues/20) [E01-S02] CI quality gates
+- [ ] [#19](https://github.com/emresoyleriz/EsCode/issues/19) [E01-S01] Repo structure & pinned toolchain
+- [ ] [#18](https://github.com/emresoyleriz/EsCode/issues/18) [EPIC E18] Release Quality & Governance
+- [ ] [#17](https://github.com/emresoyleriz/EsCode/issues/17) [EPIC E17] Packaging, Update & Restore
+- [ ] [#16](https://github.com/emresoyleriz/EsCode/issues/16) [EPIC E16] UI Accessibility & Polish
+- [ ] [#15](https://github.com/emresoyleriz/EsCode/issues/15) [EPIC E15] Observability & Resource Control
+- [ ] [#14](https://github.com/emresoyleriz/EsCode/issues/14) [EPIC E14] MCP, Plugin & Browser
+- [ ] [#13](https://github.com/emresoyleriz/EsCode/issues/13) [EPIC E13] Multi-Agent & Merge
+- [ ] [#12](https://github.com/emresoyleriz/EsCode/issues/12) [EPIC E12] Code Intelligence
+- [ ] [#11](https://github.com/emresoyleriz/EsCode/issues/11) [EPIC E11] MVP Story Workflow
+- [ ] [#10](https://github.com/emresoyleriz/EsCode/issues/10) [EPIC E10] Agent Orchestration
+- [ ] [#9](https://github.com/emresoyleriz/EsCode/issues/9) [EPIC E09] LLM Gateway & Model Studio
+- [ ] [#8](https://github.com/emresoyleriz/EsCode/issues/8) [EPIC E08] Editor & Developer Tools
+- [ ] [#7](https://github.com/emresoyleriz/EsCode/issues/7) [EPIC E07] Premium Desktop Shell
+- [ ] [#6](https://github.com/emresoyleriz/EsCode/issues/6) [EPIC E06] Git & Worktrees
+- [ ] [#5](https://github.com/emresoyleriz/EsCode/issues/5) [EPIC E05] Workspace & Buffer Safety
+- [ ] [#4](https://github.com/emresoyleriz/EsCode/issues/4) [EPIC E04] Persistence & Recovery
+- [ ] [#3](https://github.com/emresoyleriz/EsCode/issues/3) [EPIC E03] Windows Sandbox & Tool Broker
+- [ ] [#2](https://github.com/emresoyleriz/EsCode/issues/2) [EPIC E02] Secure IPC
+- [ ] [#1](https://github.com/emresoyleriz/EsCode/issues/1) [EPIC E01] Foundation & Toolchain
+

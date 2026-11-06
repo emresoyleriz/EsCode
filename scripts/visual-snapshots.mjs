@@ -69,6 +69,43 @@ try{
       "Unexpected horizontal overflow on "+screen.id+" at "+size.width);
   }
  }
+ // Explicit recovery: no background code storage, closed dirty buffers survive.
+ await page.getByRole("button",{name:t("EN","toggleAgent"),exact:true}).click();
+ await page.locator('.sidebar [data-page="ide"]').click();
+ await page.locator(".monaco-editor .view-lines").click();
+ await page.keyboard.press("Control+End");
+ await page.keyboard.press("Enter");
+ await page.keyboard.type("// recovery-fixture");
+ await page.getByText(t("EN","dirty"),{exact:true}).waitFor();
+ await page.locator('.filetree button').filter({hasText:"AgentOrchestrator.cs"}).click();
+ await page.getByRole("button",{name:"Close WorkspaceService.cs",exact:true}).click();
+ // Same-file selection and closing an inactive tab must retain the editor handle.
+ await page.locator('.filetree button').filter({hasText:"AgentOrchestrator.cs"}).click();
+ await page.locator(".monaco-editor .view-lines").click();
+ await page.keyboard.press("Control+Home");
+ await page.getByRole("button",{name:t("EN","inlineEdit"),exact:true}).click();
+ await page.locator("#inline-replacement").fill("// inline-ref-check\n");
+ await page.getByRole("button",{name:t("EN","inlineAccept"),exact:true}).click();
+ await page.waitForFunction(()=>document.querySelector(".view-lines")?.textContent.includes("inline-ref-check"));
+ await page.locator(".monaco-editor .view-lines").click();
+ await page.keyboard.press("Control+z");
+ await page.waitForFunction(()=>!document.querySelector(".view-lines")?.textContent.includes("inline-ref-check"));
+
+ await page.locator('.sidebar [data-page="recovery"]').click();
+ assert.equal(await page.evaluate(()=>localStorage.getItem("escode.preview.buffers.v1")),null);
+ await page.getByRole("button",{name:t("EN","checkpointSave"),exact:true}).click();
+ const copy=await page.evaluate(()=>JSON.parse(localStorage.getItem("escode.preview.buffers.v1")));
+ assert.ok(copy.buffers["WorkspaceService.cs"].includes("recovery-fixture"),JSON.stringify(copy.buffers["WorkspaceService.cs"]));
+ assert.ok(!copy.tabs.includes("WorkspaceService.cs"));
+ page.on("dialog",dialog=>dialog.accept());
+ await page.reload({waitUntil:"networkidle"});
+ await page.locator('.sidebar [data-page="recovery"]').click();
+ await page.getByRole("button",{name:t("EN","checkpointRestore"),exact:true}).click();
+ await page.locator('.filetree button').filter({hasText:"WorkspaceService.cs"}).click();
+ await page.waitForFunction(()=>document.querySelector(".view-lines")?.textContent.includes("recovery-fixture"));
+ await page.locator('.sidebar [data-page="recovery"]').click();
+ await page.getByRole("button",{name:t("EN","checkpointRemove"),exact:true}).click();
+ assert.equal(await page.evaluate(()=>localStorage.getItem("escode.preview.buffers.v1")),null);
  console.log("VISUAL_SMOKE_PASS: "+(NAV.length*4)+" screenshots; 13 screens, 2 themes, 2 languages, command palette, persisted prefs and floating panel.");
  await page.close();
 } finally {await browser.close();}
