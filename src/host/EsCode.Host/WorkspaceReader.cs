@@ -33,6 +33,22 @@ internal sealed class WorkspaceReader
         _rootPrefix = _root.EndsWith(Path.DirectorySeparatorChar) ? _root : _root + Path.DirectorySeparatorChar;
     }
 
+    // Keep the Host read/patch path policy aligned with the Tool Broker's
+    // sensitive-resource restrictions; a renderer cannot bypass broker policy
+    // through a future read-only workspace endpoint.
+    private static bool SensitiveSegment(string segment) =>
+        segment.StartsWith(".", StringComparison.Ordinal) ||
+        segment.Equals("secrets", StringComparison.OrdinalIgnoreCase) ||
+        segment.Equals("credentials", StringComparison.OrdinalIgnoreCase) ||
+        segment.Equals("id_rsa", StringComparison.OrdinalIgnoreCase) ||
+        segment.Equals("id_ed25519", StringComparison.OrdinalIgnoreCase) ||
+        segment.Contains("password", StringComparison.OrdinalIgnoreCase) ||
+        segment.Contains("secret", StringComparison.OrdinalIgnoreCase) ||
+        segment.Contains("credential", StringComparison.OrdinalIgnoreCase) ||
+        segment.EndsWith(".pem", StringComparison.OrdinalIgnoreCase) ||
+        segment.EndsWith(".pfx", StringComparison.OrdinalIgnoreCase) ||
+        segment.EndsWith(".key", StringComparison.OrdinalIgnoreCase);
+
     private string Resolve(string relative, bool directory = false)
     {
         if (string.IsNullOrWhiteSpace(relative) || relative.Length > 1024 ||
@@ -40,7 +56,7 @@ internal sealed class WorkspaceReader
             relative.Contains(':') || relative.Contains('\0') || relative.Contains('%'))
             throw new UnauthorizedAccessException("Invalid workspace path");
         var segments = relative.Split('/');
-        if (segments.Any(x => x.Length == 0 || x is "." or ".." || x.StartsWith(".env", StringComparison.OrdinalIgnoreCase)
+        if (segments.Any(x => x.Length == 0 || x is "." or ".." || SensitiveSegment(x)
             || DeniedSegments.Contains(x) || x.Length > 255))
             throw new UnauthorizedAccessException("Denied workspace path");
         var full = Path.GetFullPath(Path.Combine(_root, Path.Combine(segments)));
@@ -135,7 +151,7 @@ internal sealed class WorkspaceReader
             foreach (var full in Directory.EnumerateFileSystemEntries(directory).OrderBy(x => x, StringComparer.Ordinal))
             {
                 var name = Path.GetFileName(full);
-                if (DeniedSegments.Contains(name) || name.StartsWith(".env", StringComparison.OrdinalIgnoreCase))
+                if (DeniedSegments.Contains(name) || SensitiveSegment(name))
                     continue;
                 var attrs = File.GetAttributes(full);
                 if ((attrs & FileAttributes.ReparsePoint) != 0) continue;
@@ -166,6 +182,9 @@ internal static class WorkspaceReadSpike
         {
             File.WriteAllText(Path.Combine(root, "src", "hello.cs"), "namespace Test; class Hello {}");
             File.WriteAllText(Path.Combine(root, ".env"), "SECRET=do-not-read");
+            File.WriteAllText(Path.Combine(root, "src", "credentials.json"), "private");
+            File.WriteAllText(Path.Combine(root, "src", "private.key"), "private");
+            File.WriteAllText(Path.Combine(root, "src", "passwords.txt"), "private");
             File.WriteAllText(Path.Combine(root, ".git", "config"), "secret");
             File.WriteAllBytes(Path.Combine(root, "src", "binary.bin"), new byte[] { 0, 1, 2 });
             var reader = new WorkspaceReader(root);
@@ -178,9 +197,13 @@ internal static class WorkspaceReadSpike
             try { reader.ReplaceText("src/hello.cs", snapshot.Sha256, "unsafe overwrite"); return false; }
             catch (InvalidOperationException) { }
             var list = reader.ListTextCandidates();
-            if (!list.Contains("src/hello.cs") || list.Any(x => x.StartsWith(".git") || x.StartsWith(".env"))) return false;
+            if (!list.Contains("src/hello.cs") || list.Any(x => x.StartsWith(".git") || x.StartsWith(".env") ||
+                x.Contains("credential", StringComparison.OrdinalIgnoreCase) ||
+                x.Contains("password", StringComparison.OrdinalIgnoreCase) ||
+                x.EndsWith(".key", StringComparison.OrdinalIgnoreCase))) return false;
             foreach (var invalid in new[] { "../outside", "src/../../outside", ".git/config", ".env",
-                "src\\hello.cs", "/etc/passwd", "C:/Windows/win.ini", "src/%2e%2e/x" })
+                "src\\hello.cs", "/etc/passwd", "C:/Windows/win.ini", "src/%2e%2e/x",
+                "src/credentials.json", "src/private.key", "src/passwords.txt" })
             {
                 try { reader.ReadText(invalid); return false; }
                 catch (Exception ex) when (ex is UnauthorizedAccessException or ArgumentException or FileNotFoundException) { }
