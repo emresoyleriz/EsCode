@@ -92,8 +92,25 @@ internal sealed class ToolPolicyBroker
         (i.Resource.StartsWith("workspace/", StringComparison.Ordinal) ||
          i.Resource.StartsWith("project/", StringComparison.Ordinal)) &&
         !i.Resource.Contains('\\') && !i.Resource.Contains(':') && !i.Resource.Contains('\0') &&
-        !i.Resource.Split('/').Any(x => x is "" or "." or "..") &&
+        !i.Resource.Split('/').Any(IsDeniedResourceSegment) &&
         i.ArgumentsDigest is not null && Regex.IsMatch(i.ArgumentsDigest, "^sha256:[a-f0-9]{64}$");
+
+    // Grants must not authorize access to credential material, including
+    // dotfiles and platform-specific credential stores hidden inside a workspace.
+    private static bool IsDeniedResourceSegment(string segment) =>
+        segment.Length == 0 || segment is "." or ".." ||
+        segment.StartsWith(".", StringComparison.Ordinal) ||
+        segment.Equals("node_modules", StringComparison.OrdinalIgnoreCase) ||
+        segment.Equals("secrets", StringComparison.OrdinalIgnoreCase) ||
+        segment.Equals("credentials", StringComparison.OrdinalIgnoreCase) ||
+        segment.Equals("id_rsa", StringComparison.OrdinalIgnoreCase) ||
+        segment.Equals("id_ed25519", StringComparison.OrdinalIgnoreCase) ||
+        segment.Contains("password", StringComparison.OrdinalIgnoreCase) ||
+        segment.Contains("secret", StringComparison.OrdinalIgnoreCase) ||
+        segment.Contains("credential", StringComparison.OrdinalIgnoreCase) ||
+        segment.EndsWith(".pem", StringComparison.OrdinalIgnoreCase) ||
+        segment.EndsWith(".pfx", StringComparison.OrdinalIgnoreCase) ||
+        segment.EndsWith(".key", StringComparison.OrdinalIgnoreCase);
 
     private static bool Matches(BrokerIntent a, BrokerIntent b) =>
         a.Risk == b.Risk &&
@@ -139,6 +156,20 @@ internal static class ToolPolicyBrokerSpike
         if (broker.Consume(token, intent, "workspace-A").Allowed) return false;
         if (broker.GrantAfterTrustedHumanApproval(intent, "workspace-A", TimeSpan.FromMinutes(6)) is not null) return false;
         if (broker.GrantAfterTrustedHumanApproval(intent with {Resource = "workspace/../secret"}, "workspace-A", TimeSpan.FromMinutes(1)) is not null) return false;
+        // Positive control: ordinary source files remain eligible for supervised approval.
+        if (broker.GrantAfterTrustedHumanApproval(intent with { Resource = "workspace/src/feature.cs" },
+                "workspace-A", TimeSpan.FromMinutes(1)) is null) return false;
+        foreach (var denied in new[]
+        {
+            "workspace/.env", "workspace/src/.git/config", "workspace/secrets/config.json",
+            "workspace/Credentials/data.json", "workspace/src/ID_RSA", "workspace/cert.pfx",
+            "workspace/private.key", "workspace/node_modules/pkg/index.js",
+            "workspace/src/passwords.json", "workspace/src/credential-store.json"
+        })
+        {
+            if (broker.GrantAfterTrustedHumanApproval(intent with { Resource = denied },
+                    "workspace-A", TimeSpan.FromMinutes(1)) is not null) return false;
+        }
         if (broker.GrantAfterTrustedHumanApproval(intent with {Tool = "process.shell"}, "workspace-A", TimeSpan.FromMinutes(1)) is not null) return false;
         if (broker.GrantAfterTrustedHumanApproval(intent with {Risk = ToolRisk.Critical}, "workspace-A", TimeSpan.FromMinutes(1)) is not null) return false;
         var readOnly = new ToolPolicyBroker(BrokerMode.ReadOnly, "workspace-A", () => now);
