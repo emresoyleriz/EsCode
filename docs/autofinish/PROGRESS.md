@@ -27,4 +27,8 @@ This is an explicitly labeled, unencrypted **sample workspace** copy. It does no
 - Main tree, open issues and open PRs examined; PR #131 contains planning only.
 - 86 open issue records captured in TASKS.md, including parent epics; this is not a count of independent coding tasks.
 - Existing package ledger still lists implementation gaps in every major release area. Those gaps were not moved into the local-PC gate #125.
-- No commits, pushes, merges, issue closures or release publication performed.
+- Recovery/editor package published as PR #132, commit 3e68267d10f7a26289e5ed4b07269e087ee9fb7d. No merge, issue closure or release publication.
+
+## Floating panel recovery — #85 / #38 partial slice
+
+Persisted off-screen coordinates and viewport changes now clamp the full floating panel width and height into the visible viewport. Pinning still blocks user drag but does not leave the panel inaccessible after display changes. Pure geometry tests cover large, negative, invalid and tiny viewport cases. Browser smoke passed for saved coordinates (9000,9000), width 640, then 1366×768 and 980×620 resize; existing recovery/inline regressions also pass. Real mixed-DPI/multimonitor native acceptance remains open.

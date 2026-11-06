@@ -3,11 +3,11 @@
   "repository": "emresoyleriz/EsCode",
   "base": "76199fdec905dda4736f15962800edb63240a432",
   "branch": "work/32-buffer-recovery",
-  "status": "ready-for-publication",
+  "status": "partial-published-development",
   "story": 32,
   "scope": "Explicit sample-editor recovery copy",
-  "committed": false,
-  "pushed": false,
+  "committed": true,
+  "pushed": true,
   "merged": false,
   "project_complete": false,
   "release_certified": false,
@@ -19,5 +19,8 @@
     "browser_smoke": "passed; 52 screenshots plus recovery/inline-edit regressions",
     "dotnet_windows": "not run"
   },
-  "publication_authorized": true
+  "publication_authorized": true,
+  "recovery_pr": 132,
+  "recovery_commit": "3e68267d10f7a26289e5ed4b07269e087ee9fb7d",
+  "layout_story": 85
 }

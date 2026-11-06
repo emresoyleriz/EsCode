@@ -1,6 +1,7 @@
 import React,{useState,useEffect,useRef,Suspense} from "react";
 import {createRoot} from "react-dom/client";
 import {BUFFER_KEY,readCheckpoint,saveCheckpoint,removeCheckpoint,restoreCheckpoint} from "./buffer-recovery.js";
+import {fitFloatingPanel} from "./panel-layout.js";
 import {NAV} from "./state.js";
 import {openEditorTab,closeEditorTab} from "./editor-tabs.js";
 import {prepareInlineEdit,applyInlineEdit} from "./inline-edit.js";
@@ -64,6 +65,8 @@ function App(){
  const [modelProbeStatus,setModelProbeStatus]=useState("not-run");
  const lastFocus=useRef(null);
  const [floatPosition,setFloatPosition]=useState(null);
+ const [viewport,setViewport]=useState(()=>({width:window.innerWidth,height:window.innerHeight}));
+ useEffect(()=>{const update=()=>setViewport({width:window.innerWidth,height:window.innerHeight});window.addEventListener("resize",update);return()=>window.removeEventListener("resize",update);},[]);
  const dragging=useRef(null);
  const panelResize=useRef(null);
  const dictionary=(key)=>t(prefs.locale,key);
@@ -235,7 +238,8 @@ function App(){
  }
  const menu= NAV.filter(n=>dictionary(n.id).toLocaleLowerCase(prefs.locale==="TR"?"tr-TR":"en-US").includes(query.toLocaleLowerCase(prefs.locale==="TR"?"tr-TR":"en-US")));
  const float=prefs.agentMode==="floating";
- const agent=<aside className={`agent-panel ${float?"agent-floating":""}`} style={{width:agentWidth,...(float?{left:floatPosition?.x??prefs.agentX,top:floatPosition?.y??prefs.agentY}:{})}} aria-label={dictionary("agentTitle")}>
+ const floatingGeometry=fitFloatingPanel({x:floatPosition?.x??prefs.agentX,y:floatPosition?.y??prefs.agentY,width:agentWidth},viewport);
+ const agent=<aside className={`agent-panel ${float?"agent-floating":""}`} style={{width:agentWidth,...(float?{left:floatingGeometry.x,top:floatingGeometry.y,width:floatingGeometry.width,maxHeight:floatingGeometry.maxHeight}:{})}} aria-label={dictionary("agentTitle")}>
   <div className={`panel-title ${float&&!prefs.agentPinned?"draggable":""}`} onPointerDown={startDrag} onPointerMove={moveDrag} onPointerUp={endDrag}>
     <span className="star">✧</span> {dictionary("agentTitle")}
     <span className="right"><button title={prefs.agentPinned?dictionary("unpin"):dictionary("pin")} aria-pressed={prefs.agentPinned} onClick={()=>change("agentPinned",!prefs.agentPinned)}>{prefs.agentPinned?"◉":"○"}</button><button onClick={()=>change("agentMode","hidden")} aria-label={dictionary("close")}>×</button></span>

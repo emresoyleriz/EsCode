@@ -22,3 +22,7 @@ Initial rapid-typing regression failed: the stored text contained a truncated ma
 The new recovery controls were visually inspected in dark TR and light EN screenshots. Disabled restore is visually distinct; buttons wrap without hiding text. Screenshots are smoke evidence, not an approved reference baseline or WCAG/human acceptance signoff.
 
 Raw local logs and screenshots are under ignored `artifacts/verification/` and `artifacts/visual/`; no secrets are logged by the feature. Re-run the commands in CI after publication. Independent review remains outstanding.
+
+## Floating panel recovery batch
+
+`node --test tests/panel-layout.test.js tests/preferences.test.js`: 9 passed. Production build passed. Browser smoke with additional persisted off-screen geometry and resize assertions passed, including all previous editor regressions. PR #132 hosted CI: ui-foundation, dependency-audit, windows-ui-build and visual-screenshots successful when checked; windows-ipc-spike still running. Native multimonitor acceptance and independent review remain outstanding.
