@@ -25,6 +25,17 @@ internal static class AppContainerAdversarialSpike
             if (await AppContainerProcessSpike.RunProbeAsync(
                 "cmd.exe", "/D /C type \"" + privateFile + "\"")) return false;
 
+            // The host can write this private location, while a zero-capability
+            // AppContainer must not be able to create or overwrite files there.
+            // A denied write must leave both the existing content and directory intact.
+            var deniedWrite = Path.Combine(root, "unauthorized-create.txt");
+            if (await AppContainerProcessSpike.RunProbeAsync(
+                "cmd.exe", $"/D /C echo unauthorized>\"{deniedWrite}\"")) return false;
+            if (File.Exists(deniedWrite)) return false;
+            if (await AppContainerProcessSpike.RunProbeAsync(
+                "cmd.exe", $"/D /C echo overwritten>\"{privateFile}\"")) return false;
+            if (await File.ReadAllTextAsync(privateFile) != contents) return false;
+
             // Active process limit: a contained cmd must not spawn a second exe.
             if (await AppContainerProcessSpike.RunProbeAsync(
                 "cmd.exe", "/D /C whoami.exe /user")) return false;
