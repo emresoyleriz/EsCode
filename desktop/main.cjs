@@ -3,6 +3,7 @@ const path=require("node:path");
 const fs=require("node:fs");
 const {pathToFileURL}=require("node:url");
 const {startManagedHost,validateModelProbeInput}=require("./host-bridge.cjs");
+const {resolveBundledAsset}=require("./asset-guard.cjs");
 
 const ROOT=path.resolve(__dirname,"../dist");
 protocol.registerSchemesAsPrivileged([{scheme:"escode",privileges:{standard:true,secure:true,supportFetchAPI:true,stream:true}}]);
@@ -38,10 +39,8 @@ app.whenReady().then(()=>{
  protocol.handle("escode",request=>{
    const url=new URL(request.url);
    if(url.host!=="app")return new Response("Forbidden",{status:403});
-   let file;
-   try{file=path.resolve(ROOT,"."+decodeURIComponent(url.pathname));}catch{return new Response("Invalid URL",{status:400});}
-   if(!(file===ROOT||file.startsWith(ROOT+path.sep))||!fs.existsSync(file)||!fs.statSync(file).isFile())
-      return new Response("Not found",{status:404});
+   const file=resolveBundledAsset(ROOT,url.pathname);
+   if(!file)return new Response("Not found",{status:404});
    return net.fetch(pathToFileURL(file).toString());
  });
  // Read-only, authenticated Host capability query only. Renderer cannot invoke tools.
