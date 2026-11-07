@@ -13,6 +13,7 @@
 - React 19 interface and Monaco ESM editor with local workers; editable in-memory buffers, *not* filesystem persistence.
 - Electron 45 sandboxed shell, minimal context-isolated preload API and custom escode://app/ protocol. Read-only authenticated .NET capability bridge in progress (G1); no live tool or agent execution.
 - Versioned non-secret preferences and layout state; selected theme/density/locale/panel mode persisted safely.
+- Recovery screen can explicitly store/restore/delete an unencrypted sample-editor copy; no automatic code persistence, project file writes or Host recovery integration. Conflicting unsaved edits block restoration.
 - Theme CSS custom properties generated from design/tokens.json.
 - 15 draft JSON Schema service contracts and separate Windows IPC/policy/revision/retry spikes.
 - 18 Epic + 54 unique Story IDs (55 issue records; E07-S02 is duplicated in #38/#39) + 270 checklist tasks and .AI coding agent rules.

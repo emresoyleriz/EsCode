@@ -1,0 +1,35 @@
+{
+  "updated": "2026-11-07",
+  "repository": "emresoyleriz/EsCode",
+  "base": "76199fdec905dda4736f15962800edb63240a432",
+  "branch": "work/32-buffer-recovery",
+  "status": "partial-published-development",
+  "story": 32,
+  "scope": "Explicit sample-editor recovery copy",
+  "committed": true,
+  "pushed": true,
+  "merged": false,
+  "project_complete": false,
+  "release_certified": false,
+  "checks": {
+    "focused_tests": "18 passed",
+    "full_suite": "56 passed; 11 EPERM socket failures",
+    "build": "passed",
+    "syntax": "passed",
+    "browser_smoke": "passed; 52 screenshots plus recovery/inline-edit regressions",
+    "dotnet_windows": "not run"
+  },
+  "publication_authorized": true,
+  "recovery_pr": 132,
+  "recovery_commit": "3e68267d10f7a26289e5ed4b07269e087ee9fb7d",
+  "layout_story": 85,
+  "latest_slice": "IPC absolute deadlines and shared request backpressure",
+  "latest_stories": [
+    24,
+    23
+  ],
+  "prior_pr_ci": {
+    "132": "5 successful",
+    "133": "5 successful"
+  }
+}

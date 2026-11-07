@@ -1,5 +1,7 @@
 import React,{useState,useEffect,useRef,Suspense} from "react";
 import {createRoot} from "react-dom/client";
+import {BUFFER_KEY,readCheckpoint,saveCheckpoint,removeCheckpoint,restoreCheckpoint} from "./buffer-recovery.js";
+import {fitFloatingPanel} from "./panel-layout.js";
 import {NAV} from "./state.js";
 import {openEditorTab,closeEditorTab} from "./editor-tabs.js";
 import {prepareInlineEdit,applyInlineEdit} from "./inline-edit.js";
@@ -41,6 +43,7 @@ public sealed class ToolBroker
 "appsettings.json":`{ "EsCode": { "Stage": "Prototype", "Autonomous": false } }`
 };
 const TASKS=["Analyze","Plan","Approve","Implement","Test","Review"];
+function checkpointStorage(){try{return window.localStorage;}catch{return null;}}
 function App(){
  const [prefs,setPrefs]=useState(readSettings);
  const [page,setPage]=useState("ide");
@@ -53,6 +56,7 @@ function App(){
  const [inlineReplacement,setInlineReplacement]=useState("");
  const editorRef=useRef(null);
  const [notice,setNotice]=useState("");
+ const [checkpointState,setCheckpointState]=useState(()=>readCheckpoint(seed,checkpointStorage()));
  const [role,setRole]=useState("Supervised");
  const [prompt,setPrompt]=useState("");
  const [hostCaps,setHostCaps]=useState({mode:"browser-preview",hostConnected:false});
@@ -61,6 +65,8 @@ function App(){
  const [modelProbeStatus,setModelProbeStatus]=useState("not-run");
  const lastFocus=useRef(null);
  const [floatPosition,setFloatPosition]=useState(null);
+ const [viewport,setViewport]=useState(()=>({width:window.innerWidth,height:window.innerHeight}));
+ useEffect(()=>{const update=()=>setViewport({width:window.innerWidth,height:window.innerHeight});window.addEventListener("resize",update);return()=>window.removeEventListener("resize",update);},[]);
  const dragging=useRef(null);
  const panelResize=useRef(null);
  const dictionary=(key)=>t(prefs.locale,key);
@@ -95,14 +101,40 @@ function App(){
    });
  };
  useEffect(()=>{saveSettings(prefs)},[prefs]);
+ useEffect(()=>{
+   const refresh=e=>{if(e.key===BUFFER_KEY||e.key===null)setCheckpointState(readCheckpoint(seed,checkpointStorage()));};
+   window.addEventListener("storage",refresh);
+   return()=>window.removeEventListener("storage",refresh);
+ },[]);
+ useEffect(()=>{
+   if(!Object.keys(seed).some(name=>buffers[name]!==seed[name]))return;
+   const warn=e=>{e.preventDefault();e.returnValue="";};
+   window.addEventListener("beforeunload",warn);
+   return()=>window.removeEventListener("beforeunload",warn);
+ },[buffers]);
  useEffect(()=>{document.documentElement.lang=prefs.locale==="TR"?"tr":"en";document.title="EsCode — "+dictionary(page)},[prefs.locale,page]);
  useEffect(()=>{const handle=e=>{
    if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="k"){e.preventDefault();if(palette)closePalette();else openPalette();}
    if(e.key==="Escape"&&palette){e.preventDefault();closePalette();}
  };document.addEventListener("keydown",handle);return()=>document.removeEventListener("keydown",handle);},[palette]);
  useEffect(()=>{let active=true;window.escode?.capabilities?.().then(s=>{if(active&&s?.mode)setHostCaps({mode:s.mode,hostConnected:s.hostConnected===true})}).catch(()=>{});return()=>{active=false}},[]);
- const onSelectFile=(name)=>{setInlineProposal(null);editorRef.current=null;setOpenTabs(current=>openEditorTab(current,name));setSelectedFile(name);setPage("ide");};
- const onCloseFile=(name)=>{setInlineProposal(null);editorRef.current=null;const next=closeEditorTab(openTabs,selectedFile,name);setOpenTabs(next.tabs);setSelectedFile(next.selected);};
+ const saveBufferCheckpoint=()=>{
+   const ok=saveCheckpoint({buffers,tabs:openTabs,selected:selectedFile},seed,checkpointStorage());
+   setCheckpointState(readCheckpoint(seed,checkpointStorage()));
+   setNotice(dictionary(ok?"checkpointSaved":"checkpointFailed"));
+ };
+ const restoreBuffers=()=>{
+   const state=readCheckpoint(seed,checkpointStorage());
+   setCheckpointState(state);
+   try{
+     const restored=restoreCheckpoint(state.checkpoint,buffers,seed);
+     setInlineProposal(null);editorRef.current=null;
+     setBuffers(restored.buffers);setOpenTabs(restored.tabs);setSelectedFile(restored.selected);
+     setNotice(dictionary("checkpointRestored"));setPage("ide");
+   }catch{setNotice(dictionary(state.status==="ready"?"checkpointConflict":"checkpointFailed"));}
+ };
+ const onSelectFile=(name)=>{setInlineProposal(null);if(name!==selectedFile)editorRef.current=null;setOpenTabs(current=>openEditorTab(current,name));setSelectedFile(name);setPage("ide");};
+ const onCloseFile=(name)=>{setInlineProposal(null);const next=closeEditorTab(openTabs,selectedFile,name);if(next.selected!==selectedFile)editorRef.current=null;setOpenTabs(next.tabs);setSelectedFile(next.selected);};
  const beginInlineEdit=()=>{
    const editor=editorRef.current;
    const selection=editor?.getSelection();
@@ -118,8 +150,13 @@ function App(){
  const acceptInlineEdit=()=>{
    if(!inlineProposal||inlineProposal.file!==selectedFile){setInlineProposal(null);return;}
    try{
-     const next=applyInlineEdit(inlineProposal,buffers[selectedFile],inlineReplacement);
-     setBuffers(prev=>({...prev,[selectedFile]:next}));
+     const editor=editorRef.current;
+     const model=editor?.getModel();
+     if(!model)throw new Error("Editor unavailable");
+     const next=applyInlineEdit(inlineProposal,model.getValue(),inlineReplacement);
+     editor.pushUndoStop();
+     editor.executeEdits("escode.inline-edit",[{range:model.getFullModelRange(),text:next,forceMoveMarkers:true}]);
+     editor.pushUndoStop();
      setInlineProposal(null);
      setInlineReplacement("");
    }catch{setInlineProposal(null);setNotice(dictionary("inlineStale"));}
@@ -160,7 +197,7 @@ function App(){
         <button type="button" className="primary" disabled={!inlineProposal.original&&!inlineReplacement} onClick={acceptInlineEdit}>{dictionary("inlineAccept")}</button></div>
       </section>}
       <div className="monaco-container" aria-label={dictionary("codeTitle")}><Suspense fallback={<div className="editor-loading">Monaco Editor…</div>}>
-        <Monaco key={selectedFile} onMount={editor=>{editorRef.current=editor;}} path={selectedFile} language={languageForFile(selectedFile)} theme={prefs.theme==="dark"?"vs-dark":"light"} value={buffers[selectedFile]} options={{fontSize:13,minimap:{enabled:false},automaticLayout:true,scrollBeyondLastLine:false,wordWrap:"off",fontLigatures:true,readOnly:false,accessibilitySupport:"auto"}} onChange={v=>setBuffers(p=>({...p,[selectedFile]:v??""}))}/>
+        <Monaco key={selectedFile} onMount={editor=>{editorRef.current=editor;}} path={selectedFile} language={languageForFile(selectedFile)} theme={prefs.theme==="dark"?"vs-dark":"light"} defaultValue={buffers[selectedFile]} options={{fontSize:13,minimap:{enabled:false},automaticLayout:true,scrollBeyondLastLine:false,wordWrap:"off",fontLigatures:true,readOnly:false,accessibilitySupport:"auto"}} onChange={v=>setBuffers(p=>({...p,[selectedFile]:v??""}))}/>
       </Suspense></div>
       {prefs.terminalOpen&&<div className="terminal"><div className="terminal-head"><span>{dictionary("terminalTitle")}</span><button onClick={()=>change("terminalOpen",false)} aria-label={dictionary("close")}>×</button></div><div className="terminal-body"><span className="term-dim">PS C:\EsCode&gt;</span> dotnet test<br/><span className="term-dim">{dictionary("notConnected")} — {dictionary("mock")}</span><br/><span className="term-dim">PS C:\EsCode&gt; _</span></div></div>}
     </div></div>;
@@ -186,7 +223,14 @@ function App(){
  </div>;
   if(page==="approvals")return <div className="cards-grid two">{tile(dictionary("approvals"),dictionary("scope"),empty("⬡",dictionary("approvalTitle"),dictionary("approvalHelp")))}{tile(dictionary("role"),dictionary("prototype"),["Read-only","Ask","Supervised"].map(x=><div className="agent-row" key={x}>{x}{tag("MVP")}</div>))}</div>;
   if(page==="review")return <div className="cards-grid two">{tile(dictionary("review"),dictionary("noConnection"),empty("⑂",dictionary("noData"),dictionary("gitHelp")))}{tile(dictionary("review"),dictionary("prototype"),miniNotice(dictionary("role"),dictionary("gitHelp")))}</div>;
-  if(page==="recovery")return <div className="cards-grid two">{tile(dictionary("recovery"),dictionary("noConnection"),empty("▥",dictionary("recoveryTitle"),dictionary("recoveryHelp")))}{tile(dictionary("unknown"),dictionary("noConnection"),miniNotice(dictionary("unknown"),dictionary("retryWarning")))}</div>;
+  if(page==="recovery")return <div className="cards-grid two">{tile(dictionary("checkpointTitle"),dictionary("checkpointPrivacy"),<>
+    <p role="status">{dictionary("checkpoint_"+checkpointState.status)}</p>
+    {checkpointState.checkpoint&&<ul>{Object.keys(checkpointState.checkpoint.buffers).map(name=><li key={name}>{name}{checkpointState.checkpoint.buffers[name]!==seed[name]?" •":""}</li>)}</ul>}
+    <div className="recovery-actions"><button type="button" className="secondary" onClick={saveBufferCheckpoint}>{dictionary("checkpointSave")}</button>
+    <button type="button" className="primary" disabled={checkpointState.status!=="ready"} onClick={restoreBuffers}>{dictionary("checkpointRestore")}</button>
+    <button type="button" className="secondary" onClick={()=>{const ok=removeCheckpoint(checkpointStorage());setCheckpointState(readCheckpoint(seed,checkpointStorage()));setNotice(dictionary(ok?"checkpointRemoved":"checkpointFailed"));}}>{dictionary("checkpointRemove")}</button></div>
+    <p>{dictionary("checkpointLimitations")}</p>
+  </>)}{tile(dictionary("unknown"),dictionary("noConnection"),miniNotice(dictionary("unknown"),dictionary("retryWarning")))}</div>;
   if(page==="intelligence")return <div className="cards-grid two">{tile(dictionary("intelligence"),dictionary("noConnection"),<><input className="search-input" aria-label={dictionary("intelligence")} placeholder={dictionary("command")}/><p>{dictionary("notConnected")}</p></>)}{tile(dictionary("context"),dictionary("notVerified"),<div className="agent-row">{dictionary("notVerified")}</div>)}</div>;
   if(page==="mcp")return <div className="cards-grid two">{tile(dictionary("mcp"),dictionary("noConnection"),empty("⬢",dictionary("noData"),dictionary("notConnected")))}{tile(dictionary("scope"),dictionary("notVerified"),miniNotice(dictionary("notVerified"),dictionary("notConnected")))}</div>;
   if(page==="terminal")return <div className="cards-grid two">{tile(dictionary("terminalTitle"),dictionary("prototype"),<pre className="mock-term">PS C:\EsCode&gt; _{"\n"}{dictionary("mock")}</pre>)}{tile("Agent Terminal",dictionary("offline"),<pre className="mock-term">{dictionary("notConnected")}</pre>)}</div>;
@@ -194,7 +238,8 @@ function App(){
  }
  const menu= NAV.filter(n=>dictionary(n.id).toLocaleLowerCase(prefs.locale==="TR"?"tr-TR":"en-US").includes(query.toLocaleLowerCase(prefs.locale==="TR"?"tr-TR":"en-US")));
  const float=prefs.agentMode==="floating";
- const agent=<aside className={`agent-panel ${float?"agent-floating":""}`} style={{width:agentWidth,...(float?{left:floatPosition?.x??prefs.agentX,top:floatPosition?.y??prefs.agentY}:{})}} aria-label={dictionary("agentTitle")}>
+ const floatingGeometry=fitFloatingPanel({x:floatPosition?.x??prefs.agentX,y:floatPosition?.y??prefs.agentY,width:agentWidth},viewport);
+ const agent=<aside className={`agent-panel ${float?"agent-floating":""}`} style={{width:agentWidth,...(float?{left:floatingGeometry.x,top:floatingGeometry.y,width:floatingGeometry.width,maxHeight:floatingGeometry.maxHeight}:{})}} aria-label={dictionary("agentTitle")}>
   <div className={`panel-title ${float&&!prefs.agentPinned?"draggable":""}`} onPointerDown={startDrag} onPointerMove={moveDrag} onPointerUp={endDrag}>
     <span className="star">✧</span> {dictionary("agentTitle")}
     <span className="right"><button title={prefs.agentPinned?dictionary("unpin"):dictionary("pin")} aria-pressed={prefs.agentPinned} onClick={()=>change("agentPinned",!prefs.agentPinned)}>{prefs.agentPinned?"◉":"○"}</button><button onClick={()=>change("agentMode","hidden")} aria-label={dictionary("close")}>×</button></span>
