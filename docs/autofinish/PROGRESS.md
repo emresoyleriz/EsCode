@@ -32,3 +32,9 @@ This is an explicitly labeled, unencrypted **sample workspace** copy. It does no
 ## Floating panel recovery — #85 / #38 partial slice
 
 Persisted off-screen coordinates and viewport changes now clamp the full floating panel width and height into the visible viewport. Pinning still blocks user drag but does not leave the panel inaccessible after display changes. Pure geometry tests cover large, negative, invalid and tiny viewport cases. Browser smoke passed for saved coordinates (9000,9000), width 640, then 1366×768 and 980×620 resize; existing recovery/inline regressions also pass. Real mixed-DPI/multimonitor native acceptance remains open.
+
+## IPC lifecycle and backpressure — #24 / #23 partial slice
+
+Capability and local model probes now have absolute deadlines instead of inactivity-only timeouts. Continuous incomplete traffic can no longer retain a request indefinitely. Abrupt socket close rejects promptly; settled requests clear their timers and destroy sockets. One bridge permits at most four in-flight requests shared by both query types; capacity is released on success/failure. No retries of external writes, new renderer permissions or protocol changes.
+
+Eight injected-transport regression tests pass, covering partial traffic, abrupt close, authenticated success, invalid deadlines, shared capacity exhaustion and capacity release. Existing real-socket integration tests remain present. Full local suite: 78 total, 67 pass, 11 EPERM socket-listen failures. Syntax passes. PR #132 and #133 now each have all five hosted CI checks successful, including Windows IPC. No main merge or issue closure performed.
