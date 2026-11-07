@@ -22,5 +22,14 @@
   "publication_authorized": true,
   "recovery_pr": 132,
   "recovery_commit": "3e68267d10f7a26289e5ed4b07269e087ee9fb7d",
-  "layout_story": 85
+  "layout_story": 85,
+  "latest_slice": "IPC absolute deadlines and shared request backpressure",
+  "latest_stories": [
+    24,
+    23
+  ],
+  "prior_pr_ci": {
+    "132": "5 successful",
+    "133": "5 successful"
+  }
 }

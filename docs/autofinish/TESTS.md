@@ -26,3 +26,7 @@ Raw local logs and screenshots are under ignored `artifacts/verification/` and `
 ## Floating panel recovery batch
 
 `node --test tests/panel-layout.test.js tests/preferences.test.js`: 9 passed. Production build passed. Browser smoke with additional persisted off-screen geometry and resize assertions passed, including all previous editor regressions. PR #132 hosted CI: ui-foundation, dependency-audit, windows-ui-build and visual-screenshots successful when checked; windows-ipc-spike still running. Native multimonitor acceptance and independent review remain outstanding.
+
+## IPC lifecycle batch
+
+`node --test tests/ipc-deadline.test.js`: 8 passed. `npm test`: 78 tests, 67 passed; the same 11 existing socket-listen EPERM failures remain. `npm run check:syntax`: 34 files passed. Authentication, replay and real transport tests remain intact; injected transport tests supplement rather than replace integration tests. No renderer changes in this batch. PR #132/#133: all five hosted checks passed at verification time.
