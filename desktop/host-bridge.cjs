@@ -45,25 +45,36 @@ function modelSign(secret,kind,requestId,baseUrl,model,found,status){
   return createHmac('sha256',secret).update(message,'utf8').digest('hex');
 }
 
-function createBridge({name,secret,connect=net.createConnection,timeoutMs=1500}){
+function createBridge({name,secret,connect=net.createConnection,timeoutMs=1500,modelTimeoutMs=9000}){
   if(!Buffer.isBuffer(secret)||secret.length!==32)throw new Error('Invalid session secret');
+  if(!Number.isSafeInteger(timeoutMs)||timeoutMs<1||timeoutMs>30000||
+     !Number.isSafeInteger(modelTimeoutMs)||modelTimeoutMs<1||modelTimeoutMs>30000)
+    throw new Error('Invalid request deadline');
   const endpoint=pipePath(name);
+  let inFlight=0;
+  async function bounded(action){
+    if(inFlight>=4)throw new Error('Host request capacity exceeded');
+    inFlight++;
+    try{return await action();}finally{inFlight--;}
+  }
   return Object.freeze({
     async capabilities(requestId=randomBytes(16).toString('hex')){
       if(typeof requestId!=='string'||!/^[a-f0-9]{32}$/.test(requestId))throw new Error('Invalid request ID');
       const request={protocolVersion:VERSION,requestId,type:RESPONSE_TYPE,
         auth:sign(secret,'request',requestId)};
-      return await new Promise((resolve,reject)=>{
-        let socket,settled=false,raw=Buffer.alloc(0);
+      return await bounded(()=>new Promise((resolve,reject)=>{
+        let socket,deadline,settled=false,raw=Buffer.alloc(0);
         const finish=(error,value)=>{
           if(settled)return;
           settled=true;
+          clearTimeout(deadline);
           if(socket)socket.destroy();
           if(error)reject(error);else resolve(value);
         };
         try{socket=connect(endpoint);}
         catch{finish(new Error('Host connection unavailable'));return;}
-        socket.setTimeout(timeoutMs,()=>finish(new Error('Host response timeout')));
+        deadline=setTimeout(()=>finish(new Error('Host response timeout')),timeoutMs);
+        socket.on('close',()=>finish(new Error('Host closed connection')));
         socket.on('error',()=>finish(new Error('Host connection unavailable')));
         socket.on('end',()=>finish(new Error('Host closed connection')));
         socket.on('connect',()=>socket.write(JSON.stringify(request)+'\n'));
@@ -80,7 +91,7 @@ function createBridge({name,secret,connect=net.createConnection,timeoutMs=1500})
             finish(null,Object.freeze({mode:MODE,protocolVersion:VERSION,safeRenderer:true,hostConnected:true}));
           }catch{finish(new Error('Host response authentication failed'));}
         });
-      });
+      }));
     },
     async probeModel(baseUrl,model,requestId=randomBytes(16).toString('hex')){
       if(!validateModelProbeInput(baseUrl,model)||
@@ -88,17 +99,19 @@ function createBridge({name,secret,connect=net.createConnection,timeoutMs=1500})
         throw new Error('Invalid local model probe');
       const req={protocolVersion:VERSION,requestId,type:'model-probe',baseUrl,model,
         auth:modelSign(secret,'request',requestId,baseUrl,model)};
-      return await new Promise((resolve,reject)=>{
-        let socket,settled=false,raw=Buffer.alloc(0);
+      return await bounded(()=>new Promise((resolve,reject)=>{
+        let socket,deadline,settled=false,raw=Buffer.alloc(0);
         const finish=(error,result)=>{
           if(settled)return;
           settled=true;
+          clearTimeout(deadline);
           socket?.destroy();
           if(error)reject(error);else resolve(result);
         };
         try{socket=connect(endpoint);}
         catch{finish(new Error('Model Host unavailable'));return;}
-        socket.setTimeout(9000,()=>finish(new Error('Model probe timeout')));
+        deadline=setTimeout(()=>finish(new Error('Model probe timeout')),modelTimeoutMs);
+        socket.on('close',()=>finish(new Error('Model Host disconnected')));
         socket.on('error',()=>finish(new Error('Model Host unavailable')));
         socket.on('end',()=>finish(new Error('Model Host disconnected')));
         socket.on('connect',()=>socket.write(JSON.stringify(req)+'\n'));
@@ -128,7 +141,7 @@ function createBridge({name,secret,connect=net.createConnection,timeoutMs=1500})
             finish(null,Object.freeze({found:result.found,status:result.status}));
           }catch{finish(new Error('Model response authentication failed'));}
         });
-      });
+      }));
     }
   });
 }

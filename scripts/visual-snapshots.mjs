@@ -53,6 +53,13 @@ try{
  assert.equal(await page.locator("#locale").inputValue(),"EN");
  assert.equal(await page.locator("#theme").inputValue(),"light");
  assert.equal(await page.locator("#agentMode").inputValue(),"floating");
+ // Persisted coordinates on a removed monitor must recover on screen.
+ await page.evaluate(()=>{const key="escode.ui.settings.v2";const p=JSON.parse(localStorage.getItem(key));localStorage.setItem(key,JSON.stringify({...p,agentX:9000,agentY:9000,agentWidth:640}));});
+ await page.reload({waitUntil:"networkidle"});
+ for(const viewport of [{width:1366,height:768},{width:980,height:620}]){
+  await page.setViewportSize(viewport);
+  await page.waitForFunction(()=>{const r=document.querySelector(".agent-floating")?.getBoundingClientRect();return r&&r.left>=0&&r.right<=innerWidth+1&&r.top>=0&&r.bottom<=innerHeight+1;});
+ }
  // Four desktop viewport classes. This checks navigation and viewport overflow,
  // not mixed-DPI screen readers or a signed Windows desktop build.
  for(const size of [{width:1366,height:768},{width:1920,height:1080},
